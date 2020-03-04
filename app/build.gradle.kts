@@ -21,7 +21,19 @@ android {
         // testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        val debug by getting {
+            keyAlias = "debug"
+            keyPassword = "android"
+            storeFile = file("../debug.jks")
+            storePassword = "android"
+        }
+    }
+
     buildTypes {
+        val debug by getting {
+            signingConfig = signingConfigs.findByName("debug")
+        }
         val release by getting {
             isMinifyEnabled = false
             // TODO JTW
