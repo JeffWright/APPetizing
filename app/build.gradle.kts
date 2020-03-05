@@ -33,11 +33,11 @@ android {
     buildTypes {
         val debug by getting {
             signingConfig = signingConfigs.findByName("debug")
+            isMinifyEnabled = false
         }
         val release by getting {
-            isMinifyEnabled = false
-            // TODO JTW
-            //  proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), File("proguard-rules.pro"))
         }
     }
 
@@ -53,13 +53,17 @@ dependencies {
     implementation(AndroidX.constraintLayout)
     implementation(AndroidX.ktxCore)
     implementation(AndroidX.appCompat)
+    implementation(AndroidX.recyclerView)
 
     implementation(RxJava.rxJava)
-    implementation(RxJava.rxBinding)
     implementation(RxJava.rxPreferences)
+    implementation(RxJava.rxRelay)
+    implementation(RxJava.rxBinding)
+    implementation(RxJava.rxBindingRecyclerView)
 
     implementation(Retrofit.retrofit)
     implementation(Retrofit.rxAdapter)
+    implementation(Retrofit.moshiConverter)
 
     implementation(Dagger.dagger)
     kapt(Dagger.daggerCompiler)

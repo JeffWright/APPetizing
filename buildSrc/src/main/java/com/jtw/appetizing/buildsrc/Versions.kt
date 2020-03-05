@@ -11,20 +11,29 @@ object AndroidX {
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:1.1.3"
     const val appCompat = "androidx.appcompat:appcompat:1.1.0"
     const val ktxCore = "androidx.core:core-ktx:1.2.0"
+    const val recyclerView = "androidx.recyclerview:recyclerview:1.1.0"
+
+    // TODO JTW
+    // For control over item selection of both touch and mouse driven selection
+    // implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc01"
 }
 
 object RxJava {
     const val rxJava = "io.reactivex.rxjava2:rxjava:2.2.18"
-    const val rxBinding ="com.jakewharton.rxbinding2:rxbinding:2.2.0"
+    const val rxBinding = "com.jakewharton.rxbinding2:rxbinding:2.2.0"
+    const val rxBindingRecyclerView = "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:2.2.0"
     const val rxPreferences = "com.f2prateek.rx.preferences2:rx-preferences:2.0.0"
+    const val rxRelay = "com.jakewharton.rxrelay2:rxrelay:2.1.1"
 }
 
 object Retrofit {
     private const val version = "2.7.2"
 
     const val retrofit = "com.squareup.retrofit2:retrofit:$version"
+
     /** https://github.com/square/retrofit/tree/master/retrofit-adapters/rxjava2 */
     const val rxAdapter = "com.squareup.retrofit2:adapter-rxjava2:$version"
+    const val moshiConverter = "com.squareup.retrofit2:converter-moshi:$version"
 }
 
 object Dagger {
