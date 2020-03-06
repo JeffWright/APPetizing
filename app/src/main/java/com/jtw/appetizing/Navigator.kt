@@ -1,5 +1,6 @@
 package com.jtw.appetizing
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import com.jtw.appetizing.list.Effect
@@ -29,18 +30,40 @@ class Navigator @Inject constructor(
     private fun handleEffect(effect: NavigationEffect) {
         when (effect) {
             is ShowMealsListEffect -> {
-                fragmentManager.replaceFragment(
-                        MealsListFragment(),
-                        container)
+                fragmentManager.beginTransaction()
+                        .setCustomAnimations(
+                                R.anim.slide_in_right,
+                                R.anim.slide_out_left,
+                                R.anim.slide_in_left,
+                                R.anim.slide_out_right
+                        )
+                        .replace(R.id.container, MealsListFragment())
+                        .addToBackStack(null)
+                        .commit();
             }
             is ShowMealDetailsEffect -> {
-                fragmentManager.replaceFragment(
-                        MealDetailsFragment(),
-                        container)
+                // fragmentManager.replaceFragment(
+                //         MealDetailsFragment(),
+                //         container)
+
+                fragmentManager.beginTransaction()
+                        // .addSharedElement(sharedElementView, sharedElementViewName)
+                        .setCustomAnimations(
+                                R.anim.slide_in_right,
+                                R.anim.slide_out_left,
+                                R.anim.slide_in_left,
+                                R.anim.slide_out_right
+                        )
+                        .replace(R.id.container, MealDetailsFragment())
+                        .addToBackStack(null)
+                        .commit();
             }
         }
     }
 }
+
+lateinit var sharedElementView: View // view in first fragment
+val sharedElementViewName: String = "image"
 
 sealed class NavigationEffect : Effect
 class ShowMealsListEffect : NavigationEffect()

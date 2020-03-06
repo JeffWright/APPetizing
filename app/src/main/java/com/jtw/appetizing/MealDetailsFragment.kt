@@ -72,6 +72,7 @@ class MealDetailsPresenter @Inject constructor() {
                             }
                             .joinToString("\n")
                     view.instructions.text = meal.get().strInstructions
+                            .replace("\n", "\n\n")
 
                     Glide.with(view.image)
                             .load(meal.get().strMealThumb)

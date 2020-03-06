@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jtw.appetizing.*
 import com.jtw.appetizing.dagger.MainActivityComponent
 import com.jtw.appetizing.network.MealWithThumb
+import com.jtw.appetizing.network.Success
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.list.view.*
@@ -58,6 +59,12 @@ class MealListPresenter @Inject constructor(
                 chosenCategoryObservable
                         .map { "${it.category} meals" }
                         .subscribe(view.header::setText)
+
+        disposable += modelStore.state
+                .map { (it.chosenCategory as? ChosenCategory.Actual)?.mealsInCategory }
+                .filterIsInstance<Success<*>>()
+                .firstElement()
+                .subscribe { recycler.scheduleLayoutAnimation() }
 
         disposable += chosenCategoryObservable
                 .subscribe(

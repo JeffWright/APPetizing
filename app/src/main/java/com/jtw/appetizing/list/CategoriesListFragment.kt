@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jtw.appetizing.DisposableFragment
-import com.jtw.appetizing.R
+import com.jtw.appetizing.*
 import com.jtw.appetizing.dagger.MainActivityComponent
+import com.jtw.appetizing.network.Success
 import com.jtw.appetizing.network.Uninitialized
-import com.jtw.appetizing.plusAssign
 import com.jtw.util.log
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -65,6 +64,12 @@ class CategoryListPresenter @Inject constructor(
                     modelStore.onEvent(ChoseCategoryEvent(it))
                 }
 
+        disposable += modelStore.state
+                .map { it.categories }
+                .filterIsInstance<Success<*>>()
+                .firstElement()
+                .subscribe { recycler.scheduleLayoutAnimation() }
+       
         disposable += modelStore.state
                 .subscribe(
                         { state ->

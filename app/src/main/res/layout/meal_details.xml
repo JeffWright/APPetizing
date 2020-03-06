@@ -14,6 +14,7 @@
         app:layout_constraintEnd_toStartOf="@+id/meal_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:transitionName="image"
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <TextView
