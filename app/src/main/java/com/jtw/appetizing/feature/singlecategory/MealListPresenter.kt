@@ -1,43 +1,20 @@
-package com.jtw.appetizing.list
+package com.jtw.appetizing.feature.singlecategory
 
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jtw.appetizing.*
-import com.jtw.appetizing.dagger.MainActivityComponent
-import com.jtw.appetizing.network.MealWithThumb
+import com.jtw.appetizing.core.ChoseMealEvent
+import com.jtw.appetizing.core.ChosenCategory
+import com.jtw.appetizing.core.ModelStore
+import com.jtw.appetizing.domain.MealWithThumbnail
 import com.jtw.appetizing.network.Success
+import com.jtw.appetizing.util.filterIsInstance
+import com.jtw.appetizing.util.plusAssign
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.list.view.*
 import javax.inject.Inject
-
-
-class MealsListFragment : DisposableFragment() {
-
-    @Inject lateinit var categoriesPresenter: CategoryListPresenter
-    @Inject lateinit var mealsPresenter: MealListPresenter
-    @Inject lateinit var modelStore: ModelStore
-
-    override fun inject(component: MainActivityComponent) {
-        component.inject(this)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.list, container, false)
-        view.tag = "MealsListFragment"
-        addToDisposable(
-                mealsPresenter.bind(view, modelStore) {
-                    activity?.title = getString(R.string.title_meals, it)
-                }
-        )
-        return view
-    }
-}
 
 class MealListPresenter @Inject constructor(
         private val adapter: MealsAdapter
@@ -63,7 +40,7 @@ class MealListPresenter @Inject constructor(
         disposable +=
                 chosenCategoryObservable
                         .map { it.category }
-                        .subscribe { title -> setActivityTitle(title) }
+                        .subscribe { category -> setActivityTitle(category.strCategory) }
 
         disposable += modelStore.state
                 .map { (it.chosenCategory as? ChosenCategory.Actual)?.mealsInCategory }
@@ -74,7 +51,7 @@ class MealListPresenter @Inject constructor(
         disposable += chosenCategoryObservable
                 .subscribe(
                         { state ->
-                            val meals: List<MealWithThumb> = state.mealsInCategory.get()
+                            val meals: List<MealWithThumbnail> = state.mealsInCategory.get()
                                     ?: emptyList()
                             adapter.submitList(meals)
                         },
@@ -86,7 +63,7 @@ class MealListPresenter @Inject constructor(
                     modelStore.onEvent(ChoseMealEvent(
                             it.idMeal,
                             it.strMeal,
-                            it.strMealThumb
+                            it.mealThumb
                     )) // TODO JTW
                 }
 

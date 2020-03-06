@@ -1,14 +1,13 @@
-package com.jtw.appetizing
+package com.jtw.appetizing.dagger
 
 import android.content.Context
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.jtw.appetizing.dagger.DaggerFragment
-import com.jtw.appetizing.dagger.MainActivityComponent
+import com.jtw.appetizing.util.TAG
 
 class InjectionFragmentLifecycleCallbacks(
-    private val daggerComponent: MainActivityComponent
+        private val daggerComponent: MainActivityComponent
 ) : FragmentManager.FragmentLifecycleCallbacks() {
 
     override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) {

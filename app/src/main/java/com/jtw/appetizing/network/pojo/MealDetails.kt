@@ -1,4 +1,4 @@
-package com.jtw.appetizing.network
+package com.jtw.appetizing.network.pojo
 
 data class MealDetails(
         val dateModified: Any,

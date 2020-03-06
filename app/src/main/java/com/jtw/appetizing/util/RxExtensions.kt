@@ -1,4 +1,4 @@
-package com.jtw.appetizing
+package com.jtw.appetizing.util
 
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable

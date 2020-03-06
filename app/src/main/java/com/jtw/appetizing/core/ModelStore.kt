@@ -1,13 +1,11 @@
-package com.jtw.appetizing.list
+package com.jtw.appetizing.core
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
-import com.jtw.appetizing.ShowMealDetailsEffect
-import com.jtw.appetizing.ShowMealsListEffect
 import com.jtw.appetizing.dagger.ApplicationScoped
-import com.jtw.appetizing.network.*
-import com.jtw.appetizing.plusAssign
-import com.jtw.util.log
+import com.jtw.appetizing.network.MealDbService
+import com.jtw.appetizing.util.log
+import com.jtw.appetizing.util.plusAssign
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
@@ -36,6 +34,8 @@ class ModelStore @Inject constructor(
                     }
                 }
 
+        disposable += effects.subscribe(::handleEffect)
+
         disposable += state.subscribe { state ->
             log("State output: $state ")
         }
@@ -47,12 +47,29 @@ class ModelStore @Inject constructor(
     fun onEvent(event: Event) = events.accept(event)
     fun onEffect(event: Effect) = effects.accept(event)
 
+    private fun handleEffect(effect: Effect) {
+        when (effect) {
+            is LoadCategoriesEffect -> {
+                disposable += mealDbService.getCategories()
+                        .subscribe { onEvent(LoadedCategoriesEvent(it)) }
+            }
+            is LoadMealsEffect -> {
+                disposable += mealDbService
+                        .getMealsForCategory(effect.category)
+                        .subscribe { onEvent(LoadedMealsForCategoryEvent(it)) }
+            }
+            is LoadMealDetailsEffect -> {
+                disposable += mealDbService
+                        .getMealDetails(effect.mealId)
+                        .subscribe { onEvent(LoadedMealDetailsEvent(it)) }
+            }
+        }
+    }
+
     private fun reduce(previousState: AppState, event: Event): Next<AppState> {
         when (event) {
             is RequestLoadCategoriesEvent -> {
-                disposable += mealDbService.getCategories() // TODO effect
-                        .subscribe { onEvent(LoadedCategoriesEvent(it)) }
-                return Next.noChange()
+                return Next.effect(LoadCategoriesEffect)
             }
             is LoadedCategoriesEvent -> {
                 return Next(
@@ -60,14 +77,11 @@ class ModelStore @Inject constructor(
                 )
             }
             is ChoseCategoryEvent -> {
-                disposable += mealDbService
-                        .getMealsForCategory(event.category)
-                        .subscribe { onEvent(LoadedMealsForCategoryEvent(it)) }
                 return Next(
                         state = previousState.copy(
                                 chosenCategory = ChosenCategory.Actual(category = event.category)
                         ),
-                        effects = listOf(ShowMealsListEffect())
+                        effects = listOf(LoadMealsEffect(event.category), ShowMealsListEffect)
                 )
             }
             is LoadedMealsForCategoryEvent -> {
@@ -78,9 +92,6 @@ class ModelStore @Inject constructor(
                 ))
             }
             is ChoseMealEvent -> {
-                disposable += mealDbService
-                        .getMealDetails(event.mealId)
-                        .subscribe { onEvent(LoadedMealDetailsEvent(it)) }
                 return Next(
                         state = previousState.copy(
                                 chosenMeal = ChosenMeal(
@@ -89,7 +100,7 @@ class ModelStore @Inject constructor(
                                         event.imageUrl
                                 )
                         ),
-                        effects = listOf(ShowMealDetailsEffect())
+                        effects = listOf(LoadMealDetailsEffect(event.mealId), ShowMealDetailsEffect)
                 )
             }
             is LoadedMealDetailsEvent -> {
@@ -104,62 +115,4 @@ class ModelStore @Inject constructor(
 
 }
 
-/** Inspired (from memory) by Spotify's Mobius library */
-open class Next<STATE>(
-        /** null means no change from previous state */
-        val state: STATE? = null,
-        val effects: List<Effect> = emptyList()
-) {
 
-    companion object {
-        fun <STATE> effects(effects: List<Effect>) = Next<STATE>(effects = effects)
-
-        // class effects<STATE>(effects: List<Effect>) = Next<STATE>(effects)
-        //
-        fun <STATE> noChange() = Next<STATE>(effects = emptyList())
-    }
-}
-
-interface Effect
-interface Event
-
-object RequestLoadCategoriesEvent : Event
-data class LoadedCategoriesEvent(val result: Async<List<String>>) : Event
-
-data class ChoseCategoryEvent(val category: String) : Event
-data class LoadedMealsForCategoryEvent(val result: Async<List<MealWithThumb>>) : Event
-
-data class ChoseMealEvent(
-        val mealId: String,
-        /** Optimization so that the next page can show something while waiting for the network */
-        val mealName: String,
-        /** Optimization so that the next page can show something while waiting for the network */
-        val imageUrl: String
-) : Event
-
-data class LoadedMealDetailsEvent(val result: Async<MealDetails>) : Event
-
-data class AppState(
-        val categories: Async<List<String>>,
-        val chosenCategory: ChosenCategory = ChosenCategory.None,
-        val chosenMeal: ChosenMeal? = null
-)
-
-inline class MealCategory(val string: String)
-
-sealed class ChosenCategory {
-
-    data class Actual(
-            val category: String,
-            val mealsInCategory: Async<List<MealWithThumb>> = Uninitialized
-    ) : ChosenCategory()
-
-    object None : ChosenCategory()
-}
-
-data class ChosenMeal(
-        val mealId: String,
-        val mealName: String,
-        val imageUrl: String,
-        val mealDetails: Async<MealDetails> = Uninitialized
-)

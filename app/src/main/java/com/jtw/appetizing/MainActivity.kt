@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.jtw.appetizing.dagger.DaggerMainActivityComponent
-import com.jtw.appetizing.list.CategoriesListFragment
+import com.jtw.appetizing.dagger.InjectionFragmentLifecycleCallbacks
+import com.jtw.appetizing.feature.categories.CategoriesListFragment
+import com.jtw.appetizing.util.replaceFragment
 import kotlinx.android.synthetic.main.fragment_container.*
 import javax.inject.Inject
 

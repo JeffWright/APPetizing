@@ -1,5 +1,8 @@
 package com.jtw.appetizing.network
 
+import com.jtw.appetizing.domain.*
+import com.jtw.appetizing.network.pojo.MealDetails
+import com.jtw.appetizing.network.pojo.TheMealDbPojo
 import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
@@ -15,28 +18,28 @@ interface MealDbRetrofitService {
     fun getCategories(): Single<TheMealDbPojo<MealCategory>>
 
     @GET("filter.php")
-    fun getMealsForCategory(@Query("c") category: String): Single<TheMealDbPojo<MealWithThumb>>
+    fun getMealsForCategory(@Query("c") category: String): Single<TheMealDbPojo<MealWithThumbnailPojo>>
 
     @GET("lookup.php")
-    fun getMealDetails(@Query("i") mealId: String): Single<TheMealDbPojo<MealDetails>>
+    fun getMealDetails(@Query("i") mealId: MealId): Single<TheMealDbPojo<MealDetails>>
 }
 
 class MealDbService @Inject constructor(
         private val backingService: MealDbRetrofitService
 ) {
-    fun getCategories(): Observable<Async<List<String>>> {
+    fun getCategories(): Observable<Async<List<MealCategory>>> {
         return backingService.getCategories()
-                .map { it.meals.map { it.strCategory } }
-                .toAsync()
-    }
-
-    fun getMealsForCategory(category: String): Observable<Async<List<MealWithThumb>>> {
-        return backingService.getMealsForCategory(category)
                 .map { it.meals }
                 .toAsync()
     }
 
-    fun getMealDetails(mealId: String): Observable<Async<MealDetails>> {
+    fun getMealsForCategory(category: MealCategory): Observable<Async<List<MealWithThumbnail>>> {
+        return backingService.getMealsForCategory(category.strCategory)
+                .map { it.meals.map { MealWithThumbnail(it) } }
+                .toAsync()
+    }
+
+    fun getMealDetails(mealId: MealId): Observable<Async<MealDetails>> {
         return backingService.getMealDetails(mealId)
                 .map { it.meals.first() }
                 .toAsync()

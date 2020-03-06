@@ -1,7 +1,9 @@
-package com.jtw.util
+package com.jtw.appetizing.util
 
 import android.util.Log
-import com.jtw.appetizing.TAG
+
+// TODO JTW
+const val TAG = "JTWLOG"
 
 fun log(msg: String) {
     Log.d(TAG, msg)

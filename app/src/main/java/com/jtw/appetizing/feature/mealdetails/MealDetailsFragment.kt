@@ -1,4 +1,4 @@
-package com.jtw.appetizing
+package com.jtw.appetizing.feature.mealdetails
 
 import android.os.Bundle
 import android.transition.*
@@ -6,12 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.jtw.appetizing.R
+import com.jtw.appetizing.core.ModelStore
 import com.jtw.appetizing.dagger.DaggerFragment
 import com.jtw.appetizing.dagger.MainActivityComponent
-import com.jtw.appetizing.list.ModelStore
-import com.jtw.appetizing.network.MealDetails
 import com.jtw.appetizing.network.Success
-import com.jtw.appetizing.network.ingredients
+import com.jtw.appetizing.network.pojo.MealDetails
+import com.jtw.appetizing.network.pojo.ingredients
+import com.jtw.appetizing.util.filterIsInstance
+import com.jtw.appetizing.util.mapNotNull
+import com.jtw.appetizing.util.plusAssign
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable

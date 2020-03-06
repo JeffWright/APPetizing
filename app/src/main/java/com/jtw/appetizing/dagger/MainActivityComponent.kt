@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.jtw.appetizing.MainActivity
-import com.jtw.appetizing.MealDetailsFragment
-import com.jtw.appetizing.list.CategoriesListFragment
-import com.jtw.appetizing.list.MealsListFragment
+import com.jtw.appetizing.feature.categories.CategoriesListFragment
+import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
+import com.jtw.appetizing.feature.singlecategory.MealsListFragment
 import com.jtw.appetizing.network.MealDbRetrofitService
 import dagger.*
 import okhttp3.Cache

@@ -1,4 +1,4 @@
-package com.jtw.appetizing
+package com.jtw.appetizing.util
 
 import android.view.ViewGroup
 import androidx.annotation.IdRes

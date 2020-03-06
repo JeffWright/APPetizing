@@ -25,17 +25,8 @@ object Uninitialized : Async<Nothing>() {
     override fun toString() = "Uninitialized"
 }
 
-fun <T, R> Async<T>.flatMap(block: (T) -> R): Async<R> {
-    return when (this) {
-        is Success -> Success(block(this.get()))
-        is Loading -> this as Loading<R>
-        is Fail -> this as Fail<R>
-        is Uninitialized -> this as Async<R>
-    }
-}
-
 fun <T> Single<T>.toAsync(): Observable<Async<T>> {
-    return this.map { Success(it) as Async<T> }
+    return this.map<Async<T>> { Success(it) }
             .onErrorReturn { error -> Fail(error) }
             .toObservable()
             .startWith(Loading())

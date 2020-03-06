@@ -3,9 +3,11 @@ package com.jtw.appetizing
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
-import com.jtw.appetizing.list.Effect
-import com.jtw.appetizing.list.MealsListFragment
-import com.jtw.appetizing.list.ModelStore
+import com.jtw.appetizing.core.*
+import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
+import com.jtw.appetizing.feature.singlecategory.MealsListFragment
+import com.jtw.appetizing.util.filterIsInstance
+import com.jtw.appetizing.util.plusAssign
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -59,34 +61,9 @@ class Navigator @Inject constructor(
     }
 }
 
+// TODO JTW
 lateinit var sharedElementViewText: View
 lateinit var sharedElementViewImage: View
 val transitionNameImage: String = "imageTransition"
 val transitionNameText: String = "textTransition"
-
-sealed class NavigationEffect : Effect
-class ShowMealsListEffect : NavigationEffect()
-class ShowMealDetailsEffect : NavigationEffect()
-
-/*
-sealed class NavigationStateMachine
-
-object CategoriesList : NavigationStateMachine() {
-    fun toMealsList(
-            fragmentManager: FragmentManager,
-            container: ViewGroup
-    ): NavigationStateMachine {
-
-        return MealsList
-    }
-}
-
-object MealsList : NavigationStateMachine() {
-    fun toMealDetails() {
-        TODO("toMealDetails() not implemented")
-    }
-}
-
-object MealDetails : NavigationStateMachine()
- */
 
