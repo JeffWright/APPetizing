@@ -31,6 +31,7 @@ class MealsListFragment : DaggerFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.list, container, false)
+        view.tag = "MealsListFragment"
         mealsPresenter.bind(view, modelStore)
         return view
     }
@@ -48,11 +49,6 @@ class MealListPresenter @Inject constructor(
 
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(recycler.context, LinearLayoutManager.VERTICAL, false)
-
-        // disposable += adapter.itemClicks
-        //         .subscribe {
-        //             modelStore.onEvent(...)
-        //         }
 
         val chosenCategoryObservable = modelStore.state
                 .map { it.chosenCategory }
@@ -73,6 +69,11 @@ class MealListPresenter @Inject constructor(
                         },
                         {/* TODO JTW */ }
                 )
+
+        disposable += adapter.itemClicks
+                .subscribe {
+                    modelStore.onEvent(ChoseMealEvent(mealId = "52920")) // TODO JTW
+                }
 
         return disposable
     }

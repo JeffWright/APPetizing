@@ -35,5 +35,11 @@ class MealDbService @Inject constructor(
                 .map { it.meals }
                 .toAsync()
     }
+
+    fun getMealDetails(mealId: String): Observable<Async<MealDetails>> {
+        return backingService.getMealDetails(mealId)
+                .map { it.meals.first() }
+                .toAsync()
+    }
 }
 

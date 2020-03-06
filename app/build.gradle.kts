@@ -64,6 +64,9 @@ dependencies {
     implementation(Retrofit.retrofit)
     implementation(Retrofit.rxAdapter)
     implementation(Retrofit.moshiConverter)
+   
+    implementation(Glide.glide)
+    kapt(Glide.annotationProcessor)
 
     implementation(Dagger.dagger)
     kapt(Dagger.daggerCompiler)
@@ -73,4 +76,11 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
 
+}
+
+// Disable compiler warnings for inline classes, which are experimental
+tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
+    }
 }

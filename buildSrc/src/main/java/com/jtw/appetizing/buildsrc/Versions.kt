@@ -42,4 +42,10 @@ object Dagger {
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$version"
 }
 
+object Glide {
+    private const val version = "4.11.0"
+    const val glide = "com.github.bumptech.glide:glide:$version"
+    const val annotationProcessor = "com.github.bumptech.glide:compiler:$version"
+}
+
 const val JUnit = "junit:junit:4.12"

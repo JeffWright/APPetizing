@@ -18,9 +18,10 @@ import javax.inject.Inject
 
 class CategoriesListFragment : DaggerFragment() {
 
-    @Inject lateinit var categoriesPresenter: CategoryListPresenter
-    @Inject lateinit var mealsPresenter: MealListPresenter
+    @Inject lateinit var presenter: CategoryListPresenter
     @Inject lateinit var modelStore: ModelStore
+
+    private var disposable: CompositeDisposable? = CompositeDisposable()
 
     override fun inject(component: MainActivityComponent) {
         component.inject(this)
@@ -39,8 +40,18 @@ class CategoriesListFragment : DaggerFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.list, container, false)
-        categoriesPresenter.bind(view, modelStore)
+        view.tag = "CategoriesListFragment"
+        val disposable = disposable ?: CompositeDisposable()
+        disposable += presenter.bind(view, modelStore)
+        this.disposable = disposable
+
         return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        disposable?.clear()
+        disposable = null
     }
 
 }

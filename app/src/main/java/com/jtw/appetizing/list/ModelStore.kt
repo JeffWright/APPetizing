@@ -1,6 +1,9 @@
 package com.jtw.appetizing.list
 
 import com.jakewharton.rxrelay2.BehaviorRelay
+import com.jakewharton.rxrelay2.PublishRelay
+import com.jtw.appetizing.ShowMealDetailsEffect
+import com.jtw.appetizing.ShowMealsListEffect
 import com.jtw.appetizing.dagger.ApplicationScoped
 import com.jtw.appetizing.network.*
 import com.jtw.appetizing.plusAssign
@@ -16,16 +19,22 @@ class ModelStore @Inject constructor(
         private val mealDbService: MealDbService
 ) {
     val state: BehaviorRelay<AppState> = BehaviorRelay.create() // TODO JTW private
-    private val events: BehaviorRelay<Any> = BehaviorRelay.create()
+    private val events: PublishRelay<Event> = PublishRelay.create()
+    val effects: PublishRelay<Effect> = PublishRelay.create()
     val disposable = CompositeDisposable()
 
     init {
-        disposable += Observable.zip<AppState, Any, AppState>(
+        disposable += Observable.zip<AppState, Event, Next<AppState>>(
                         state.observeOn(Schedulers.single()), // TODO JTW
                         events,
                         BiFunction { previousState, event -> reduce(previousState, event) }
                 )
-                .subscribe(state)
+                .subscribe { next ->
+                    next.effects.forEach { effects.accept(it) }
+                    (next.state ?: state.value)?.let {
+                        state.accept(it)
+                    }
+                }
 
         disposable += state.subscribe { state ->
             log("State output: $state ")
@@ -35,59 +44,105 @@ class ModelStore @Inject constructor(
         }
     }
 
-    fun onEvent(event: Any) = events.accept(event)
+    fun onEvent(event: Event) = events.accept(event)
+    fun onEffect(event: Effect) = effects.accept(event)
 
-    private fun reduce(previousState: AppState, event: Any): AppState {
+    private fun reduce(previousState: AppState, event: Event): Next<AppState> {
         when (event) {
             is RequestLoadCategoriesEvent -> {
-                disposable += mealDbService.getCategories()
+                disposable += mealDbService.getCategories() // TODO effect
                         .subscribe { onEvent(LoadedCategoriesEvent(it)) }
+                return Next.noChange()
             }
             is LoadedCategoriesEvent -> {
-                return previousState.copy(categories = event.result)
+                return Next(
+                        previousState.copy(categories = event.result)
+                )
             }
             is ChoseCategoryEvent -> {
                 disposable += mealDbService
                         .getMealsForCategory(event.category)
                         .subscribe { onEvent(LoadedMealsForCategoryEvent(it)) }
-                return previousState.copy(
-                        chosenCategory = ChosenCategory.Actual(
-                                category = event.category
-                        )
+                return Next(
+                        state = previousState.copy(
+                                chosenCategory = ChosenCategory.Actual(category = event.category)
+                        ),
+                        effects = listOf(ShowMealsListEffect())
                 )
             }
             is LoadedMealsForCategoryEvent -> {
-                return previousState.copy(
+                return Next(previousState.copy(
                         chosenCategory = (previousState.chosenCategory as? ChosenCategory.Actual)
                                 ?.copy(mealsInCategory = event.result)
                                 ?: ChosenCategory.None
+                ))
+            }
+            is ChoseMealEvent -> {
+                disposable += mealDbService
+                        .getMealDetails(event.mealId)
+                        .subscribe { onEvent(LoadedMealDetailsEvent(it)) }
+                return Next(
+                        state = previousState.copy(
+                                chosenMeal = ChosenMeal(
+                                        event.mealId
+                                )
+                        ),
+                        effects = listOf(ShowMealDetailsEffect())
                 )
             }
+            is LoadedMealDetailsEvent -> {
+                return Next(previousState.copy(
+                        chosenMeal = previousState.chosenMeal
+                                ?.copy(mealDetails = event.result)
+                ))
+            }
         }
-
-        return previousState
+        return Next.noChange()
     }
 
 }
 
+/** Inspired (from memory) by Spotify's Mobius library */
+open class Next<STATE>(
+        /** null means no change from previous state */
+        val state: STATE? = null,
+        val effects: List<Effect> = emptyList()
+) {
 
-object RequestLoadCategoriesEvent
-data class LoadedCategoriesEvent(val result: Async<List<String>>)
+    companion object {
+        fun <STATE> effects(effects: List<Effect>) = Next<STATE>(effects = effects)
 
-data class ChoseCategoryEvent(val category: String)
-data class LoadedMealsForCategoryEvent(val result: Async<List<MealWithThumb>>)
+        // class effects<STATE>(effects: List<Effect>) = Next<STATE>(effects)
+        //
+        fun <STATE> noChange() = Next<STATE>(effects = emptyList())
+    }
+}
+
+interface Effect
+interface Event
+
+object RequestLoadCategoriesEvent : Event
+data class LoadedCategoriesEvent(val result: Async<List<String>>) : Event
+
+data class ChoseCategoryEvent(val category: String) : Event
+data class LoadedMealsForCategoryEvent(val result: Async<List<MealWithThumb>>) : Event
+
+data class ChoseMealEvent(val mealId: String) : Event
+data class LoadedMealDetailsEvent(val result: Async<MealDetails>) : Event
 
 data class AppState(
         val categories: Async<List<String>>,
-        val chosenCategory: ChosenCategory
+        val chosenCategory: ChosenCategory = ChosenCategory.None,
+        val chosenMeal: ChosenMeal? = null
 )
+
+inline class MealCategory(val string: String)
 
 sealed class ChosenCategory {
 
     data class Actual(
             val category: String,
-            val mealsInCategory: Async<List<MealWithThumb>> = Uninitialized,
-            val chosenMeal: ChosenMeal? = null
+            val mealsInCategory: Async<List<MealWithThumb>> = Uninitialized
     ) : ChosenCategory()
 
     object None : ChosenCategory()
@@ -95,5 +150,5 @@ sealed class ChosenCategory {
 
 data class ChosenMeal(
         val mealId: String,
-        val mealDetails: MealDetails?
+        val mealDetails: Async<MealDetails> = Uninitialized
 )

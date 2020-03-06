@@ -2,7 +2,8 @@ package com.jtw.appetizing
 
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
-import com.jtw.appetizing.list.ChosenCategory
+import com.jtw.appetizing.list.Effect
+import com.jtw.appetizing.list.MealsListFragment
 import com.jtw.appetizing.list.ModelStore
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -14,42 +15,47 @@ class Navigator @Inject constructor(
 
     private val disposable = CompositeDisposable()
     lateinit var container: ViewGroup
-    private var navigationState: NavigationStateMachine = CategoriesList
 
     fun bind(container: ViewGroup) {
         this.container = container
 
-        /*
-        disposable += modelStore.state
-                .map { it.chosenCategory }
-                .map { it is ChosenCategory.Actual }
-                .filter { it }
-                .distinctUntilChanged()
-                .subscribe {
-                    fragmentManager.replaceFragment(
-                            MealsListFragment(),
-                            container
-                    )
-                }
+        disposable += modelStore.effects
+                .filterIsInstance<NavigationEffect>()
+                .subscribe(::handleEffect)
 
-         */
 
-        disposable += modelStore.state
-                .map { it.chosenCategory }
-                .filterIsInstance<ChosenCategory.Actual>()
-                .subscribe {
-                    (navigationState as? CategoriesList)
-                            ?.toMealsList()
-                }
     }
 
+    private fun handleEffect(effect: NavigationEffect) {
+        when (effect) {
+            is ShowMealsListEffect -> {
+                fragmentManager.replaceFragment(
+                        MealsListFragment(),
+                        container)
+            }
+            is ShowMealDetailsEffect -> {
+                fragmentManager.replaceFragment(
+                        MealDetailsFragment(),
+                        container)
+            }
+        }
+    }
 }
 
+sealed class NavigationEffect : Effect
+class ShowMealsListEffect : NavigationEffect()
+class ShowMealDetailsEffect : NavigationEffect()
+
+/*
 sealed class NavigationStateMachine
 
 object CategoriesList : NavigationStateMachine() {
-    fun toMealsList() {
-        TODO("toMealsList() not implemented")
+    fun toMealsList(
+            fragmentManager: FragmentManager,
+            container: ViewGroup
+    ): NavigationStateMachine {
+
+        return MealsList
     }
 }
 
@@ -60,4 +66,5 @@ object MealsList : NavigationStateMachine() {
 }
 
 object MealDetails : NavigationStateMachine()
+ */
 

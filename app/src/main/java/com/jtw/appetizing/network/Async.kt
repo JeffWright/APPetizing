@@ -3,6 +3,7 @@ package com.jtw.appetizing.network
 import io.reactivex.Observable
 import io.reactivex.Single
 
+/** Inspired (from memory) by Airbnb's MvRx library */
 sealed class Async<out T> {
     open fun get(): T? = null
 }

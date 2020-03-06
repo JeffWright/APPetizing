@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.jtw.appetizing.MainActivity
+import com.jtw.appetizing.MealDetailsFragment
 import com.jtw.appetizing.list.CategoriesListFragment
 import com.jtw.appetizing.list.MealsListFragment
 import com.jtw.appetizing.network.MealDbRetrofitService
@@ -30,7 +31,8 @@ interface MainActivityComponent {
     fun inject(mainActivity: MainActivity)
 
     fun inject(categoriesListFragment: CategoriesListFragment)
-    fun inject(categoriesListFragment: MealsListFragment)
+    fun inject(mealsListFragment: MealsListFragment)
+    fun inject(mealDetailsFragment: MealDetailsFragment)
 }
 
 @Module
