@@ -4,18 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jtw.appetizing.R
-import com.jtw.appetizing.dagger.DaggerFragment
+import com.jtw.appetizing.*
 import com.jtw.appetizing.dagger.MainActivityComponent
-import com.jtw.appetizing.filterIsInstance
-import com.jtw.appetizing.plusAssign
+import com.jtw.appetizing.network.MealWithThumb
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.list.view.*
 import javax.inject.Inject
 
-class MealsListFragment : DaggerFragment() {
+
+class MealsListFragment : DisposableFragment() {
 
     @Inject lateinit var categoriesPresenter: CategoryListPresenter
     @Inject lateinit var mealsPresenter: MealListPresenter
@@ -25,21 +25,18 @@ class MealsListFragment : DaggerFragment() {
         component.inject(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.list, container, false)
         view.tag = "MealsListFragment"
-        mealsPresenter.bind(view, modelStore)
+        addToDisposable(
+                mealsPresenter.bind(view, modelStore)
+        )
         return view
     }
-
 }
 
 class MealListPresenter @Inject constructor(
-        private val adapter: MyAdapter
+        private val adapter: MealsAdapter
 ) {
 
     fun bind(view: View, modelStore: ModelStore): Disposable {
@@ -49,6 +46,9 @@ class MealListPresenter @Inject constructor(
 
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(recycler.context, LinearLayoutManager.VERTICAL, false)
+
+        val dividerItemDecoration = DividerItemDecoration(view.context, LinearLayoutManager.VERTICAL)
+        recycler.addItemDecoration(dividerItemDecoration)
 
         val chosenCategoryObservable = modelStore.state
                 .map { it.chosenCategory }
@@ -62,8 +62,7 @@ class MealListPresenter @Inject constructor(
         disposable += chosenCategoryObservable
                 .subscribe(
                         { state ->
-                            val meals: List<String> = state.mealsInCategory.get()
-                                    ?.map { it.strMeal }
+                            val meals: List<MealWithThumb> = state.mealsInCategory.get()
                                     ?: emptyList()
                             adapter.submitList(meals)
                         },
@@ -72,7 +71,10 @@ class MealListPresenter @Inject constructor(
 
         disposable += adapter.itemClicks
                 .subscribe {
-                    modelStore.onEvent(ChoseMealEvent(mealId = "52920")) // TODO JTW
+                    modelStore.onEvent(ChoseMealEvent(
+                            it.idMeal,
+                            it.strMeal
+                    )) // TODO JTW
                 }
 
         return disposable

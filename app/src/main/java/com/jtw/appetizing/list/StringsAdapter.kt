@@ -11,7 +11,7 @@ import com.jtw.appetizing.R
 import kotlinx.android.synthetic.main.list_item.view.*
 import javax.inject.Inject
 
-class MyAdapter @Inject constructor() : ListAdapter<String, SimpleViewHolder>(StringDiffUtil) {
+class StringsAdapter @Inject constructor() : ListAdapter<String, SimpleViewHolder>(StringDiffUtil) {
 
     val itemClicks = PublishRelay.create<String>()
 
@@ -25,6 +25,8 @@ class MyAdapter @Inject constructor() : ListAdapter<String, SimpleViewHolder>(St
         val textView = holder.itemView.text_view
         val value = getItem(position)
         textView.text = value
+
+        holder.itemView.image.visibility = View.GONE
 
         holder.itemView.setOnClickListener { itemClicks.accept(value) }
     }

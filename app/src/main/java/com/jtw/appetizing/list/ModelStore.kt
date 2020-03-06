@@ -127,7 +127,15 @@ data class LoadedCategoriesEvent(val result: Async<List<String>>) : Event
 data class ChoseCategoryEvent(val category: String) : Event
 data class LoadedMealsForCategoryEvent(val result: Async<List<MealWithThumb>>) : Event
 
-data class ChoseMealEvent(val mealId: String) : Event
+data class ChoseMealEvent(
+        val mealId: String,
+        /**
+         * Optional optimization so that the next page can show the meals' name while waiting for
+         * the network
+         */
+        val mealName: String? = null
+) : Event
+
 data class LoadedMealDetailsEvent(val result: Async<MealDetails>) : Event
 
 data class AppState(

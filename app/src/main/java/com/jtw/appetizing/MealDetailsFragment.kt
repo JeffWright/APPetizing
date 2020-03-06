@@ -17,23 +17,14 @@ import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.meal_details.view.*
 import javax.inject.Inject
 
-class MealDetailsFragment : DaggerFragment() {
-
-    @Inject lateinit var presenter: MealDetailsPresenter
-    @Inject lateinit var modelStore: ModelStore
-
+// TODO JTW better name
+abstract class DisposableFragment : DaggerFragment() {
     private var disposable: CompositeDisposable? = CompositeDisposable()
 
-    override fun inject(component: MainActivityComponent) = component.inject(this)
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.meal_details, container, false)
-        view.tag = "MealDetailsFragment"
+    fun addToDisposable(childDisposable: Disposable) {
         val disposable = disposable ?: CompositeDisposable()
-        disposable += presenter.bind(view, modelStore)
+        disposable += childDisposable
         this.disposable = disposable
-
-        return view
     }
 
     override fun onDestroyView() {
@@ -41,6 +32,27 @@ class MealDetailsFragment : DaggerFragment() {
         disposable?.clear()
         disposable = null
     }
+}
+
+class MealDetailsFragment : DisposableFragment() {
+
+    @Inject lateinit var presenter: MealDetailsPresenter
+    @Inject lateinit var modelStore: ModelStore
+
+
+    override fun inject(component: MainActivityComponent) = component.inject(this)
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.meal_details, container, false)
+        view.tag = "MealDetailsFragment"
+        addToDisposable(
+                presenter.bind(view, modelStore)
+        )
+
+        return view
+    }
+
+
 }
 
 class MealDetailsPresenter @Inject constructor() {
@@ -56,7 +68,7 @@ class MealDetailsPresenter @Inject constructor() {
                     view.meal_name.text = meal.get().strMeal
                     view.ingredients.text = meal.get().ingredients()
                             .map { (ingredient, amount) ->
-                                "$amount of $ingredient"
+                                "$ingredient  --  $amount"
                             }
                             .joinToString("\n")
                     view.instructions.text = meal.get().strInstructions

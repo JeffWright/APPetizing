@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jtw.appetizing.DisposableFragment
 import com.jtw.appetizing.R
-import com.jtw.appetizing.dagger.DaggerFragment
 import com.jtw.appetizing.dagger.MainActivityComponent
 import com.jtw.appetizing.network.Uninitialized
 import com.jtw.appetizing.plusAssign
@@ -16,12 +16,10 @@ import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.list.view.*
 import javax.inject.Inject
 
-class CategoriesListFragment : DaggerFragment() {
+class CategoriesListFragment : DisposableFragment() {
 
     @Inject lateinit var presenter: CategoryListPresenter
     @Inject lateinit var modelStore: ModelStore
-
-    private var disposable: CompositeDisposable? = CompositeDisposable()
 
     override fun inject(component: MainActivityComponent) {
         component.inject(this)
@@ -41,23 +39,15 @@ class CategoriesListFragment : DaggerFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.list, container, false)
         view.tag = "CategoriesListFragment"
-        val disposable = disposable ?: CompositeDisposable()
-        disposable += presenter.bind(view, modelStore)
-        this.disposable = disposable
-
+        addToDisposable(
+                presenter.bind(view, modelStore)
+        )
         return view
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        disposable?.clear()
-        disposable = null
-    }
-
 }
 
 class CategoryListPresenter @Inject constructor(
-        private val adapter: MyAdapter
+        private val adapter: StringsAdapter
 ) {
 
     fun bind(view: View, modelStore: ModelStore): Disposable {
