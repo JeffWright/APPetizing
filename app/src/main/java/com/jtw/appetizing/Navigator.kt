@@ -42,12 +42,9 @@ class Navigator @Inject constructor(
                         .commit();
             }
             is ShowMealDetailsEffect -> {
-                // fragmentManager.replaceFragment(
-                //         MealDetailsFragment(),
-                //         container)
-
                 fragmentManager.beginTransaction()
-                        // .addSharedElement(sharedElementView, sharedElementViewName)
+                        .addSharedElement(sharedElementViewText, transitionNameText)
+                        .addSharedElement(sharedElementViewImage, transitionNameImage)
                         .setCustomAnimations(
                                 R.anim.slide_in_right,
                                 R.anim.slide_out_left,
@@ -62,8 +59,10 @@ class Navigator @Inject constructor(
     }
 }
 
-lateinit var sharedElementView: View // view in first fragment
-val sharedElementViewName: String = "image"
+lateinit var sharedElementViewText: View
+lateinit var sharedElementViewImage: View
+val transitionNameImage: String = "imageTransition"
+val transitionNameText: String = "textTransition"
 
 sealed class NavigationEffect : Effect
 class ShowMealsListEffect : NavigationEffect()

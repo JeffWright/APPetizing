@@ -1,6 +1,7 @@
 package com.jtw.appetizing
 
 import android.os.Bundle
+import android.transition.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.meal_details.view.*
 import javax.inject.Inject
+
 
 // TODO JTW better name
 abstract class DisposableFragment : DaggerFragment() {
@@ -42,6 +44,15 @@ class MealDetailsFragment : DisposableFragment() {
 
     override fun inject(component: MainActivityComponent) = component.inject(this)
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setSharedElementEnterTransition(DetailsTransition())
+        // setEnterTransition(Fade())
+        // setExitTransition(Fade())
+        setSharedElementReturnTransition(DetailsTransition())
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.meal_details, container, false)
         view.tag = "MealDetailsFragment"
@@ -51,18 +62,29 @@ class MealDetailsFragment : DisposableFragment() {
 
         return view
     }
+}
 
-
+class DetailsTransition : TransitionSet() {
+    init {
+        setOrdering(ORDERING_TOGETHER)
+        addTransition(ChangeBounds())
+        addTransition(ChangeTransform())
+        addTransition(ChangeImageTransform())
+    }
 }
 
 class MealDetailsPresenter @Inject constructor() {
     fun bind(view: View, modelStore: ModelStore): Disposable {
         val disposable = CompositeDisposable()
 
-        disposable += modelStore.state
+        view.ingredients_and_instructions.alpha = 0f
+
+        // disposable +=
+        modelStore.state
                 .mapNotNull { it.chosenMeal }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { meal ->
+                // .observeOn(AndroidSchedulers.mainThread())
+                // .subscribe { meal ->
+                .blockingFirst().let { meal ->
                     view.meal_name.text = meal.mealName
                     Glide.with(view.image)
                             .load(meal.imageUrl)
@@ -74,18 +96,28 @@ class MealDetailsPresenter @Inject constructor() {
                 .map { it.chosenMeal!!.mealDetails }
                 .filterIsInstance<Success<MealDetails>>()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { meal ->
-                    view.meal_name.text = meal.get().strMeal
-                    view.ingredients.text = meal.get().ingredients()
+                .subscribe { loadedMeal ->
+                    val meal = loadedMeal.get()
+
+                    view.meal_name.text = meal.strMeal
+
+                    if (view.ingredients_and_instructions.alpha == 0f) {
+                        view.ingredients_and_instructions.animate()
+                                .alpha(1f)
+                                .setDuration(250)
+                    }
+
+                    view.ingredients.text = meal.ingredients()
                             .map { (ingredient, amount) ->
                                 "$ingredient  --  $amount"
                             }
                             .joinToString("\n")
-                    view.instructions.text = meal.get().strInstructions
+
+                    view.instructions.text = meal.strInstructions
                             .replace("\n", "\n\n")
 
                     Glide.with(view.image)
-                            .load(meal.get().strMealThumb)
+                            .load(meal.strMealThumb)
                             .into(view.image)
 
                 }

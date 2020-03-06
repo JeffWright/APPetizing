@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jtw.appetizing.*
 import com.jtw.appetizing.dagger.MainActivityComponent
@@ -57,6 +58,9 @@ class CategoryListPresenter @Inject constructor(
 
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(recycler.context, LinearLayoutManager.VERTICAL, false)
+       
+        val dividerItemDecoration = DividerItemDecoration(view.context, LinearLayoutManager.VERTICAL)
+        recycler.addItemDecoration(dividerItemDecoration)
 
         disposable += adapter.itemClicks
                 .subscribe {

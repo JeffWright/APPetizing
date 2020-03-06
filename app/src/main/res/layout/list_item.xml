@@ -7,13 +7,13 @@
     android:background="?selectableItemBackground"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
+    android:minHeight="48dp"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/image"
-        tools:src="@tools:sample/avatars"
-        android:transitionName="image"
+        android:src="@drawable/food_icon"
         android:layout_width="100dp"
         android:layout_height="100dp" />
 

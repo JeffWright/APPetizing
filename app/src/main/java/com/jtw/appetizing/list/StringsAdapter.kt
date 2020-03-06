@@ -26,7 +26,7 @@ class StringsAdapter @Inject constructor() : ListAdapter<String, SimpleViewHolde
         val value = getItem(position)
         textView.text = value
 
-        holder.itemView.image.visibility = View.GONE
+        // holder.itemView.image.visibility = View.GONE
 
         holder.itemView.setOnClickListener { itemClicks.accept(value) }
     }

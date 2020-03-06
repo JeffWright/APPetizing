@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toStartOf="@+id/meal_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:transitionName="image"
+        android:transitionName="imageTransition"
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <TextView
@@ -27,6 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/image"
         app:layout_constraintTop_toTopOf="parent"
+        android:transitionName="textTransition"
         tools:text="Seafood Paella" />
 
     <ScrollView
