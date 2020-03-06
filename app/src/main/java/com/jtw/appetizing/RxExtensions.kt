@@ -12,3 +12,14 @@ operator fun CompositeDisposable.plusAssign(disposable: Disposable) {
 inline fun <reified OUT> Observable<*>.filterIsInstance(): Observable<OUT> {
     return this.filter { it is OUT } as Observable<OUT>
 }
+
+fun <IN, OUT : Any> Observable<IN>.mapNotNull(mapper: (IN) -> OUT?): Observable<OUT> {
+    return this.flatMap { input ->
+        val output = mapper(input)
+        if (output == null) {
+            Observable.empty()
+        } else {
+            Observable.just(output)
+        }
+    }
+}

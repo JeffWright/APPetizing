@@ -60,6 +60,16 @@ class MealDetailsPresenter @Inject constructor() {
         val disposable = CompositeDisposable()
 
         disposable += modelStore.state
+                .mapNotNull { it.chosenMeal }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { meal ->
+                    view.meal_name.text = meal.mealName
+                    Glide.with(view.image)
+                            .load(meal.imageUrl)
+                            .into(view.image)
+                }
+
+        disposable += modelStore.state
                 .filter { it.chosenMeal != null }
                 .map { it.chosenMeal!!.mealDetails }
                 .filterIsInstance<Success<MealDetails>>()

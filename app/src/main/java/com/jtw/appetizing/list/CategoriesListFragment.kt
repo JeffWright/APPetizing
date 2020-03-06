@@ -41,6 +41,7 @@ class CategoriesListFragment : DisposableFragment() {
         addToDisposable(
                 presenter.bind(view, modelStore)
         )
+        activity?.title = getString(R.string.categories)
         return view
     }
 }
@@ -53,8 +54,6 @@ class CategoryListPresenter @Inject constructor(
         val disposable = CompositeDisposable()
 
         val recycler = view.recycler
-
-        view.header.text = "Meal Categories"
 
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(recycler.context, LinearLayoutManager.VERTICAL, false)
@@ -69,7 +68,7 @@ class CategoryListPresenter @Inject constructor(
                 .filterIsInstance<Success<*>>()
                 .firstElement()
                 .subscribe { recycler.scheduleLayoutAnimation() }
-       
+
         disposable += modelStore.state
                 .subscribe(
                         { state ->

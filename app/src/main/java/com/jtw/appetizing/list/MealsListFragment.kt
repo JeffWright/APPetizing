@@ -10,6 +10,7 @@ import com.jtw.appetizing.*
 import com.jtw.appetizing.dagger.MainActivityComponent
 import com.jtw.appetizing.network.MealWithThumb
 import com.jtw.appetizing.network.Success
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.list.view.*
@@ -30,7 +31,9 @@ class MealsListFragment : DisposableFragment() {
         val view = inflater.inflate(R.layout.list, container, false)
         view.tag = "MealsListFragment"
         addToDisposable(
-                mealsPresenter.bind(view, modelStore)
+                mealsPresenter.bind(view, modelStore) {
+                    activity?.title = getString(R.string.title_meals, it)
+                }
         )
         return view
     }
@@ -40,7 +43,7 @@ class MealListPresenter @Inject constructor(
         private val adapter: MealsAdapter
 ) {
 
-    fun bind(view: View, modelStore: ModelStore): Disposable {
+    fun bind(view: View, modelStore: ModelStore, setActivityTitle: (String) -> Unit): Disposable {
         val disposable = CompositeDisposable()
 
         val recycler = view.recycler
@@ -54,11 +57,13 @@ class MealListPresenter @Inject constructor(
         val chosenCategoryObservable = modelStore.state
                 .map { it.chosenCategory }
                 .filterIsInstance<ChosenCategory.Actual>()
+                .distinctUntilChanged()
+                .observeOn(AndroidSchedulers.mainThread())
 
         disposable +=
                 chosenCategoryObservable
-                        .map { "${it.category} meals" }
-                        .subscribe(view.header::setText)
+                        .map { it.category }
+                        .subscribe { title -> setActivityTitle(title) }
 
         disposable += modelStore.state
                 .map { (it.chosenCategory as? ChosenCategory.Actual)?.mealsInCategory }
@@ -80,7 +85,8 @@ class MealListPresenter @Inject constructor(
                 .subscribe {
                     modelStore.onEvent(ChoseMealEvent(
                             it.idMeal,
-                            it.strMeal
+                            it.strMeal,
+                            it.strMealThumb
                     )) // TODO JTW
                 }
 

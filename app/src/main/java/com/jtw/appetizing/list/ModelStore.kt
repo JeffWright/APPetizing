@@ -84,7 +84,9 @@ class ModelStore @Inject constructor(
                 return Next(
                         state = previousState.copy(
                                 chosenMeal = ChosenMeal(
-                                        event.mealId
+                                        event.mealId,
+                                        event.mealName,
+                                        event.imageUrl
                                 )
                         ),
                         effects = listOf(ShowMealDetailsEffect())
@@ -129,11 +131,10 @@ data class LoadedMealsForCategoryEvent(val result: Async<List<MealWithThumb>>) :
 
 data class ChoseMealEvent(
         val mealId: String,
-        /**
-         * Optional optimization so that the next page can show the meals' name while waiting for
-         * the network
-         */
-        val mealName: String? = null
+        /** Optimization so that the next page can show something while waiting for the network */
+        val mealName: String,
+        /** Optimization so that the next page can show something while waiting for the network */
+        val imageUrl: String
 ) : Event
 
 data class LoadedMealDetailsEvent(val result: Async<MealDetails>) : Event
@@ -158,5 +159,7 @@ sealed class ChosenCategory {
 
 data class ChosenMeal(
         val mealId: String,
+        val mealName: String,
+        val imageUrl: String,
         val mealDetails: Async<MealDetails> = Uninitialized
 )

@@ -18,7 +18,6 @@
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <TextView
-        android:text="MEAL_NAME"
         android:id="@+id/meal_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

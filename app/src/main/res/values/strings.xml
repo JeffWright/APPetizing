@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">APPetizing</string>
+    <string name="categories">Categories</string>
+    <string name="title_meals">%s Meals</string>
 </resources>
