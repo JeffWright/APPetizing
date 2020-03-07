@@ -5,8 +5,11 @@ import com.jtw.appetizing.core.ChosenCategory
 import com.jtw.appetizing.core.RenderedView
 import com.jtw.appetizing.domain.MealWithThumbnail
 import com.jtw.appetizing.network.*
+import com.jtw.appetizing.util.hide
+import com.jtw.appetizing.util.show
 import com.jtw.appetizing.util.standardSetup
 import io.reactivex.Observable
+import kotlinx.android.synthetic.main.error.view.*
 import kotlinx.android.synthetic.main.list.view.*
 import kotlinx.android.synthetic.main.loading.view.*
 import javax.inject.Inject
@@ -28,16 +31,17 @@ class MealsListView @Inject constructor(
         val meals = category.mealsInCategory
         when (meals) {
             is Success -> {
-                view.loading.visibility = View.GONE
-                view.recycler.visibility = View.VISIBLE
+                show(view.recycler)
+                hide(view.loading, view.error)
                 adapter.submitList(meals.get())
             }
             is Loading, is Uninitialized -> {
-                view.loading.visibility = View.VISIBLE
-                view.recycler.visibility = View.GONE
+                show(view.loading)
+                hide(view.recycler, view.error)
             }
             is Fail -> {
-                /* TODO JTW */
+                show(view.error)
+                hide(view.recycler, view.loading)
             }
         }
 

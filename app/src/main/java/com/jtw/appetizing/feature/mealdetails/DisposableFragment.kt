@@ -5,7 +5,6 @@ import com.jtw.appetizing.util.plusAssign
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-// TODO JTW better name
 abstract class DisposableFragment : DaggerFragment() {
     private var disposable: CompositeDisposable? = CompositeDisposable()
 

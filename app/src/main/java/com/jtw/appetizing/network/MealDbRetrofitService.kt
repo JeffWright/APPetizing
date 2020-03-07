@@ -32,27 +32,32 @@ class MealDbService @Inject constructor(
     fun getCategories(): Observable<Async<List<MealCategory>>> {
         return backingService.getCategories()
                 .map { it.meals }
-                .makeFlaky()
+                // .makeFlaky()
                 .toAsync()
     }
 
     fun getMealsForCategory(category: MealCategory): Observable<Async<List<MealWithThumbnail>>> {
         return backingService.getMealsForCategory(category.strCategory)
                 .map { it.meals.map { MealWithThumbnail(it) } }
-                .makeFlaky()
+                // .makeFlaky()
+                // .makeFail()
                 .toAsync()
     }
 
     fun getMealDetails(mealId: MealId): Observable<Async<MealDetails>> {
         return backingService.getMealDetails(mealId)
                 .map { it.meals.first() }
-                .makeFlaky()
+                // .makeFlaky()
                 .toAsync()
     }
 
     private fun <T> Single<T>.makeFlaky(): Single<T> {
         val seconds = Random(0).nextInt(0, 5)
         return this.delay(seconds.toLong(), TimeUnit.SECONDS)
+    }
+
+    private fun <T> Single<T>.makeFail(): Single<T> {
+        return this.map { throw Exception("Manufactured Exception") }
     }
 }
 

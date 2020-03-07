@@ -26,7 +26,7 @@ class Navigator @Inject constructor(
         this.secondaryContainerId = secondaryContainerId
         isTwoPane = primaryContainerId != secondaryContainerId
 
-        disposable += modelStore.effects
+        disposable += modelStore.effectsObservable
                 .filterIsInstance<NavigationEffect>()
                 .subscribe(::handleEffect)
     }

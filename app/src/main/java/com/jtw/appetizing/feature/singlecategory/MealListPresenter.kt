@@ -20,11 +20,11 @@ class MealListPresenter @Inject constructor(
 
         // Call render once synchronously (if we have the data) so that Android's
         // view-state-restoration will work properly
-        (modelStore.state.value?.chosenCategory as? ChosenCategory.Actual)
+        (modelStore.currentState?.chosenCategory as? ChosenCategory.Actual)
                 ?.let { mealsListView.render(view, it) }
 
         return compositeDisposableOf {
-            +modelStore.state
+            +modelStore.stateObservable
                     .map { it.chosenCategory }
                     .filterIsInstance<ChosenCategory.Actual>()
                     .distinctUntilChanged()
@@ -34,13 +34,8 @@ class MealListPresenter @Inject constructor(
                     }
 
             +mealsListView.itemClicks
-                    .subscribe {
-                        modelStore.onEvent(ChoseMealEvent(
-                                it.idMeal,
-                                it.strMeal,
-                                it.mealThumb
-                        )) // TODO JTW
-                    }
+                    .map { ChoseMealEvent(it.idMeal, it.strMeal, it.mealThumb) }
+                    .subscribe(modelStore::onEvent)
         }
     }
 }

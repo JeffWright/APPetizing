@@ -4,7 +4,10 @@ import android.view.View
 import com.jtw.appetizing.core.RenderedView
 import com.jtw.appetizing.domain.MealCategory
 import com.jtw.appetizing.network.*
+import com.jtw.appetizing.util.hide
+import com.jtw.appetizing.util.show
 import com.jtw.appetizing.util.standardSetup
+import kotlinx.android.synthetic.main.error.view.*
 import kotlinx.android.synthetic.main.list.view.*
 import kotlinx.android.synthetic.main.loading.view.*
 import javax.inject.Inject
@@ -22,18 +25,20 @@ class CategoryListView @Inject constructor(
     override fun render(view: View, model: Async<List<MealCategory>>) {
         when (model) {
             is Success -> {
-                view.loading.visibility = View.GONE
-                view.recycler.visibility = View.VISIBLE
+                show(view.recycler)
+                hide(view.loading, view.error)
                 adapter.submitList(model.get())
             }
             is Loading, is Uninitialized -> {
-                view.loading.visibility = View.VISIBLE
-                // view.recycler.visibility = View.GONE
+                show(view.loading)
+                hide(view.recycler, view.error)
             }
             is Fail -> {
-                /* TODO JTW */
+                show(view.error)
+                hide(view.recycler, view.loading)
             }
         }
     }
 
 }
+

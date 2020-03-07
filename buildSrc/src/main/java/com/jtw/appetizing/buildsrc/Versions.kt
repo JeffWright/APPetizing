@@ -13,10 +13,6 @@ object AndroidX {
     const val ktxCore = "androidx.core:core-ktx:1.2.0"
     const val ktxActivity = "androidx.activity:activity-ktx:1.1.0"
     const val recyclerView = "androidx.recyclerview:recyclerview:1.1.0"
-
-    // TODO JTW
-    // For control over item selection of both touch and mouse driven selection
-    // implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc01"
 }
 
 object RxJava {

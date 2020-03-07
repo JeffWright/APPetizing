@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import com.jtw.appetizing.core.*
 import com.jtw.appetizing.dagger.DaggerMainActivityComponent
 import com.jtw.appetizing.dagger.InjectionFragmentLifecycleCallbacks
@@ -12,15 +11,13 @@ import com.jtw.appetizing.feature.categories.CategoriesListFragment
 import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
 import com.jtw.appetizing.network.Uninitialized
 import com.jtw.appetizing.util.transaction
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_container.*
 import javax.inject.Inject
-import javax.inject.Provider
 
 class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var navigator: Navigator
-    @Inject lateinit var modelStoreProvider: Provider<AppetizingModelStore>
+    @Inject lateinit var modelStoreFactory: AppetizingModelStore.Factory
 
     private val daggerComponent = DaggerMainActivityComponent
             .builder()
@@ -28,7 +25,6 @@ class MainActivity : AppCompatActivity() {
             .build()
 
     private val fragmentLifecycleCallbacks = InjectionFragmentLifecycleCallbacks(daggerComponent)
-    private val disposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("JTW", "onCreate: ")
@@ -44,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.fragment_container)
 
         val viewModel: MainActivityViewModel by viewModels()
-        val modelStore = viewModel.modelStore ?: modelStoreProvider.get()
+        val modelStore = viewModel.modelStore ?: modelStoreFactory.get(createDefaultState())
         viewModel.modelStore = modelStore
 
         val primaryContainerId = container_primary.id
@@ -55,11 +51,6 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.transaction(false) {
                 replace(R.id.container_primary, CategoriesListFragment())
             }
-
-            modelStore.state.accept(AppState(
-                    categories = Uninitialized,
-                    chosenCategory = ChosenCategory.None
-            ))
 
             modelStore.onEvent(RequestLoadCategoriesEvent)
         } else {
@@ -107,8 +98,12 @@ class MainActivity : AppCompatActivity() {
         navigator.unbind()
     }
 
+
+    private fun createDefaultState(): AppState {
+        return AppState(
+                categories = Uninitialized,
+                chosenCategory = ChosenCategory.None
+        )
+    }
 }
 
-class MainActivityViewModel : ViewModel() {
-    var modelStore: AppetizingModelStore? = null
-}

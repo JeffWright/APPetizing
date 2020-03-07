@@ -1,64 +1,28 @@
 package com.jtw.appetizing.core
 
-import com.jakewharton.rxrelay2.BehaviorRelay
-import com.jakewharton.rxrelay2.PublishRelay
 import com.jtw.appetizing.dagger.ApplicationScoped
 import com.jtw.appetizing.network.MealDbService
-import com.jtw.appetizing.util.log
 import com.jtw.appetizing.util.plusAssign
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-interface ModelStore {
-    val state: BehaviorRelay<AppState>
-
-    fun onEvent(event: Event)
-}
-
-abstract class BaseModelStore : ModelStore {
-    override val state: BehaviorRelay<AppState> = BehaviorRelay.create() // TODO JTW private
-    val events: PublishRelay<Event> = PublishRelay.create()
-    val effects: PublishRelay<Effect> = PublishRelay.create()
-    val disposable = CompositeDisposable()
-
-    init {
-        disposable += Observable.zip<AppState, Event, Next<AppState>>(
-                        state.observeOn(Schedulers.single()), // TODO JTW
-                        events,
-                        BiFunction { previousState, event -> reduce(previousState, event) }
-                )
-                .subscribe { next ->
-                    next.effects.forEach { effects.accept(it) }
-                    (next.state ?: state.value)?.let {
-                        state.accept(it)
-                    }
-                }
-
-        disposable += effects.subscribe(::handleEffect)
-
-        disposable += state.subscribe { state ->
-            log("State output: $state ")
-        }
-        disposable += events.subscribe { event ->
-            log("Event input: $event")
-        }
-    }
-
-    override fun onEvent(event: Event) = events.accept(event)
-    fun onEffect(event: Effect) = effects.accept(event)
-
-    abstract fun reduce(previousState: AppState, event: Event): Next<AppState>
-
-    abstract fun handleEffect(effect: Effect)
-}
-
 @ApplicationScoped
-class AppetizingModelStore @Inject constructor(
+class AppetizingModelStore(
+        initialState: AppState,
         private val mealDbService: MealDbService
 ) : BaseModelStore() {
+
+    class Factory @Inject constructor(
+            private val mealDbService: MealDbService
+    ) {
+        fun get(initialState: AppState) = AppetizingModelStore(
+                initialState,
+                mealDbService
+        )
+    }
+
+    init {
+        state.accept(initialState)
+    }
 
     override fun handleEffect(effect: Effect) {
         when (effect) {
@@ -108,7 +72,7 @@ class AppetizingModelStore @Inject constructor(
                 if (previousState.chosenMeal?.mealId == event.mealId) {
                     return Next.noChange()
                 }
-               
+
                 return Next(
                         state = previousState.copy(
                                 chosenMeal = ChosenMeal(
