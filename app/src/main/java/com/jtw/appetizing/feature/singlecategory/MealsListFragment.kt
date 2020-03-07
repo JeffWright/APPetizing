@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jtw.appetizing.R
-import com.jtw.appetizing.core.ModelStore
+import com.jtw.appetizing.core.AppetizingModelStore
 import com.jtw.appetizing.dagger.MainActivityComponent
 import com.jtw.appetizing.feature.categories.CategoryListPresenter
 import com.jtw.appetizing.feature.mealdetails.DisposableFragment
@@ -16,7 +16,7 @@ class MealsListFragment : DisposableFragment() {
 
     @Inject lateinit var categoriesPresenter: CategoryListPresenter
     @Inject lateinit var mealsPresenter: MealListPresenter
-    @Inject lateinit var modelStore: ModelStore
+    @Inject lateinit var modelStore: AppetizingModelStore
 
     override fun inject(component: MainActivityComponent) {
         component.inject(this)

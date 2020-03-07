@@ -11,5 +11,5 @@ object ShowMealDetailsEffect : NavigationEffect()
 
 
 object LoadCategoriesEffect : Effect
-class LoadMealsEffect(val category: MealCategory) : Effect
-class LoadMealDetailsEffect(val mealId: MealId) : Effect
+data class LoadMealsEffect(val category: MealCategory) : Effect
+data class LoadMealDetailsEffect(val mealId: MealId) : Effect

@@ -45,6 +45,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 
@@ -52,6 +56,7 @@ dependencies {
     implementation(Kotlin.stdlib)
     implementation(AndroidX.constraintLayout)
     implementation(AndroidX.ktxCore)
+    implementation(AndroidX.ktxActivity)
     implementation(AndroidX.appCompat)
     implementation(AndroidX.recyclerView)
 
@@ -64,7 +69,7 @@ dependencies {
     implementation(Retrofit.retrofit)
     implementation(Retrofit.rxAdapter)
     implementation(Retrofit.moshiConverter)
-   
+
     implementation(Glide.glide)
     kapt(Glide.annotationProcessor)
 
@@ -72,6 +77,7 @@ dependencies {
     kapt(Dagger.daggerCompiler)
 
     testImplementation(JUnit)
+    testImplementation(Mockk)
 
     androidTestImplementation("androidx.test.ext:junit:1.1.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")

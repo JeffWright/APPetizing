@@ -5,16 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jtw.appetizing.R
-import com.jtw.appetizing.core.*
+import com.jtw.appetizing.core.AppetizingModelStore
 import com.jtw.appetizing.dagger.MainActivityComponent
 import com.jtw.appetizing.feature.mealdetails.DisposableFragment
-import com.jtw.appetizing.network.Uninitialized
 import javax.inject.Inject
 
 class CategoriesListFragment : DisposableFragment() {
 
     @Inject lateinit var presenter: CategoryListPresenter
-    @Inject lateinit var modelStore: ModelStore
+    @Inject lateinit var modelStore: AppetizingModelStore
 
     override fun inject(component: MainActivityComponent) {
         component.inject(this)
@@ -22,13 +21,6 @@ class CategoriesListFragment : DisposableFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        modelStore.state.accept(AppState(
-                categories = Uninitialized,
-                chosenCategory = ChosenCategory.None
-        ))
-
-        modelStore.onEvent(RequestLoadCategoriesEvent)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

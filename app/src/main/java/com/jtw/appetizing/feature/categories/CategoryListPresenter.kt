@@ -3,8 +3,8 @@ package com.jtw.appetizing.feature.categories
 import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jtw.appetizing.core.AppetizingModelStore
 import com.jtw.appetizing.core.ChoseCategoryEvent
-import com.jtw.appetizing.core.ModelStore
 import com.jtw.appetizing.network.Success
 import com.jtw.appetizing.util.filterIsInstance
 import com.jtw.appetizing.util.log
@@ -18,7 +18,7 @@ class CategoryListPresenter @Inject constructor(
         private val adapter: MealCategoriesAdapter
 ) {
 
-    fun bind(view: View, modelStore: ModelStore): Disposable {
+    fun bind(view: View, modelStore: AppetizingModelStore): Disposable {
         val disposable = CompositeDisposable()
 
         val recycler = view.recycler

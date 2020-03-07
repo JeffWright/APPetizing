@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class Navigator @Inject constructor(
         private val fragmentManager: FragmentManager,
-        private val modelStore: ModelStore
+        private val modelStore: AppetizingModelStore
 ) {
 
     private val disposable = CompositeDisposable()

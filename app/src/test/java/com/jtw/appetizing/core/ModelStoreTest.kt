@@ -1,17 +1,83 @@
 package com.jtw.appetizing.core
 
-import org.junit.After
-import org.junit.Before
+import com.jtw.appetizing.domain.MealCategory
+import com.jtw.appetizing.domain.MealId
+import com.jtw.appetizing.network.MealDbService
+import com.jtw.appetizing.network.Success
+import com.jtw.appetizing.network.pojo.MealDetails
+import com.jtw.appetizing.util.shouldBe
+import com.jtw.appetizing.util.shouldBeInstance
+import com.jtw.appetizing.util.shouldContain
+import io.mockk.mockk
+import org.junit.Test
 
 class ModelStoreTest {
 
-    @Before
-    fun setUp() {
+    private val objectUnderTest = AppetizingModelStore(mockk<MealDbService>())
+
+    private val testState = AppState(
+            categories = Success(listOf(MealCategory("cat1"), MealCategory("cat2")))
+    )
+
+    @Test
+    fun `handles RequestLoadCategoriesEvent`() {
+        val result = objectUnderTest.reduce(testState, RequestLoadCategoriesEvent)
+
+        result.state shouldBe null
+        result.effects shouldContain LoadCategoriesEffect
     }
 
-    // TODO JTW extract out base model store vs thing that has reduce
+    @Test
+    fun `handles LoadedCategoriesEvent`() {
+        val result = objectUnderTest.reduce(testState, LoadedCategoriesEvent(Success(listOf())))
 
-    @After
-    fun tearDown() {
+        result.state!!.categories shouldBe Success(listOf())
+        result.effects shouldBe emptyList()
+    }
+
+    @Test
+    fun `handles ChoseCategoryEvent`() {
+        val result = objectUnderTest.reduce(testState, ChoseCategoryEvent(MealCategory("cat1")))
+
+        result.state!!.chosenCategory shouldBe ChosenCategory.Actual(MealCategory("cat1"))
+        result.effects shouldContain LoadMealsEffect(MealCategory("cat1"))
+        result.effects shouldContain ShowMealsListEffect
+    }
+
+    @Test
+    fun `handles LoadedMealsForCategoryEvent`() {
+        val testStateWithCategory = testState.copy(
+                chosenCategory = ChosenCategory.Actual(MealCategory("cat1"))
+        )
+
+        val result = objectUnderTest.reduce(testStateWithCategory, LoadedMealsForCategoryEvent(Success(listOf())))
+
+        result.state!!.chosenCategory.shouldBeInstance<ChosenCategory.Actual>()
+        result.effects shouldBe emptyList()
+    }
+
+    @Test
+    fun `handles ChoseMealEvent`() {
+        val mealId = MealId("ID")
+
+        val result = objectUnderTest.reduce(testState, ChoseMealEvent(mealId, "mealName", "url"))
+
+        result.state!!.chosenMeal shouldBe ChosenMeal(mealId, "mealName", "url")
+        result.effects shouldContain LoadMealDetailsEffect(mealId)
+        result.effects shouldContain ShowMealDetailsEffect
+    }
+
+    @Test
+    fun `handles LoadedMealDetailsEvent`() {
+        val mealId = MealId("ID")
+        val testStateWithCategory = testState.copy(
+                chosenMeal = ChosenMeal(mealId, "mealName", "url")
+        )
+        val mealDetails = mockk<MealDetails>()
+       
+        val result = objectUnderTest.reduce(testStateWithCategory, LoadedMealDetailsEvent(Success(mealDetails)))
+
+        result.state!!.chosenMeal?.mealDetails?.get() shouldBe mealDetails
+        result.effects shouldBe emptyList()
     }
 }

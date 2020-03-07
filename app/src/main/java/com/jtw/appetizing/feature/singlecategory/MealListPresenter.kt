@@ -3,6 +3,7 @@ package com.jtw.appetizing.feature.singlecategory
 import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.jtw.appetizing.core.ChoseMealEvent
 import com.jtw.appetizing.core.ChosenCategory
 import com.jtw.appetizing.core.ModelStore
@@ -25,11 +26,7 @@ class MealListPresenter @Inject constructor(
 
         val recycler = view.recycler
 
-        recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(recycler.context, LinearLayoutManager.VERTICAL, false)
-
-        val dividerItemDecoration = DividerItemDecoration(view.context, LinearLayoutManager.VERTICAL)
-        recycler.addItemDecoration(dividerItemDecoration)
+        recycler.standardSetup(adapter)
 
         val chosenCategoryObservable = modelStore.state
                 .map { it.chosenCategory }
@@ -69,4 +66,14 @@ class MealListPresenter @Inject constructor(
 
         return disposable
     }
+}
+
+// TODO JTW move
+fun RecyclerView.standardSetup(adapter: RecyclerView.Adapter<*>) {
+    this.adapter = adapter
+    layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+    val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
+    addItemDecoration(dividerItemDecoration)
+
 }

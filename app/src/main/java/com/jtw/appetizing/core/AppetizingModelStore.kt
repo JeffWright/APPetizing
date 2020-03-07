@@ -12,12 +12,15 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-@ApplicationScoped
-class ModelStore @Inject constructor(
-        private val mealDbService: MealDbService
-) {
-    val state: BehaviorRelay<AppState> = BehaviorRelay.create() // TODO JTW private
-    private val events: PublishRelay<Event> = PublishRelay.create()
+interface ModelStore {
+    val state: BehaviorRelay<AppState>
+
+    fun onEvent(event: Event)
+}
+
+abstract class BaseModelStore : ModelStore {
+    override val state: BehaviorRelay<AppState> = BehaviorRelay.create() // TODO JTW private
+    val events: PublishRelay<Event> = PublishRelay.create()
     val effects: PublishRelay<Effect> = PublishRelay.create()
     val disposable = CompositeDisposable()
 
@@ -44,10 +47,20 @@ class ModelStore @Inject constructor(
         }
     }
 
-    fun onEvent(event: Event) = events.accept(event)
+    override fun onEvent(event: Event) = events.accept(event)
     fun onEffect(event: Effect) = effects.accept(event)
 
-    private fun handleEffect(effect: Effect) {
+    abstract fun reduce(previousState: AppState, event: Event): Next<AppState>
+
+    abstract fun handleEffect(effect: Effect)
+}
+
+@ApplicationScoped
+class AppetizingModelStore @Inject constructor(
+        private val mealDbService: MealDbService
+) : BaseModelStore() {
+
+    override fun handleEffect(effect: Effect) {
         when (effect) {
             is LoadCategoriesEffect -> {
                 disposable += mealDbService.getCategories()
@@ -66,7 +79,7 @@ class ModelStore @Inject constructor(
         }
     }
 
-    private fun reduce(previousState: AppState, event: Event): Next<AppState> {
+    override fun reduce(previousState: AppState, event: Event): Next<AppState> {
         when (event) {
             is RequestLoadCategoriesEvent -> {
                 return Next.effect(LoadCategoriesEffect)
@@ -110,6 +123,7 @@ class ModelStore @Inject constructor(
                 ))
             }
         }
+
         return Next.noChange()
     }
 

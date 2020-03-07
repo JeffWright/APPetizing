@@ -11,6 +11,7 @@ object AndroidX {
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:1.1.3"
     const val appCompat = "androidx.appcompat:appcompat:1.1.0"
     const val ktxCore = "androidx.core:core-ktx:1.2.0"
+    const val ktxActivity = "androidx.activity:activity-ktx:1.1.0"
     const val recyclerView = "androidx.recyclerview:recyclerview:1.1.0"
 
     // TODO JTW
@@ -49,3 +50,4 @@ object Glide {
 }
 
 const val JUnit = "junit:junit:4.12"
+const val Mockk = "io.mockk:mockk:1.9.3"
