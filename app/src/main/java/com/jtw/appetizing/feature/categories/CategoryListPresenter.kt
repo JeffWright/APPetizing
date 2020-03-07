@@ -1,57 +1,35 @@
 package com.jtw.appetizing.feature.categories
 
 import android.view.View
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.jtw.appetizing.core.AppetizingModelStore
 import com.jtw.appetizing.core.ChoseCategoryEvent
-import com.jtw.appetizing.network.Success
-import com.jtw.appetizing.util.filterIsInstance
-import com.jtw.appetizing.util.log
-import com.jtw.appetizing.util.plusAssign
-import io.reactivex.disposables.CompositeDisposable
+import com.jtw.appetizing.util.compositeDisposableOf
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.list.view.*
 import javax.inject.Inject
 
 class CategoryListPresenter @Inject constructor(
-        private val adapter: MealCategoriesAdapter
+        private val categoryListView: CategoryListView
 ) {
 
     fun bind(view: View, modelStore: AppetizingModelStore): Disposable {
-        val disposable = CompositeDisposable()
+        categoryListView.bind(view)
 
-        val recycler = view.recycler
+        // Call render once synchronously (if we have the data) so that Android's
+        // view-state-restoration will work properly
+        modelStore.state.value?.categories
+                ?.let { categoryListView.render(view, it) }
 
-        recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(recycler.context, LinearLayoutManager.VERTICAL, false)
+        return compositeDisposableOf {
+            +categoryListView.itemClicks
+                    .subscribe {
+                        modelStore.onEvent(ChoseCategoryEvent(it))
+                    }
 
-        val dividerItemDecoration = DividerItemDecoration(view.context, LinearLayoutManager.VERTICAL)
-        recycler.addItemDecoration(dividerItemDecoration)
-
-        disposable += adapter.itemClicks
-                .subscribe {
-                    modelStore.onEvent(ChoseCategoryEvent(it))
-                }
-
-        disposable += modelStore.state
-                .map { it.categories }
-                .filterIsInstance<Success<*>>()
-                .firstElement()
-                .subscribe { recycler.scheduleLayoutAnimation() }
-
-        disposable += modelStore.state
-                .subscribe(
-                        { state ->
-                            val items = state.categories.get()
-                            // recycler.scheduleLayoutAnimation()
-                            log("submit: $items")
-                            adapter.submitList(items ?: emptyList())
-                            log("submitted")
-                        },
-                        {/* TODO JTW */ }
-                )
-
-        return disposable
+            +modelStore.state
+                    .map { it.categories }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { categoryListView.render(view, it) }
+        }
     }
 }

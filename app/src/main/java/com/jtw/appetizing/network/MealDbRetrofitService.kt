@@ -7,7 +7,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.random.Random
 
 interface MealDbRetrofitService {
     companion object {
@@ -30,19 +32,27 @@ class MealDbService @Inject constructor(
     fun getCategories(): Observable<Async<List<MealCategory>>> {
         return backingService.getCategories()
                 .map { it.meals }
+                .makeFlaky()
                 .toAsync()
     }
 
     fun getMealsForCategory(category: MealCategory): Observable<Async<List<MealWithThumbnail>>> {
         return backingService.getMealsForCategory(category.strCategory)
                 .map { it.meals.map { MealWithThumbnail(it) } }
+                .makeFlaky()
                 .toAsync()
     }
 
     fun getMealDetails(mealId: MealId): Observable<Async<MealDetails>> {
         return backingService.getMealDetails(mealId)
                 .map { it.meals.first() }
+                .makeFlaky()
                 .toAsync()
+    }
+
+    private fun <T> Single<T>.makeFlaky(): Single<T> {
+        val seconds = Random(0).nextInt(0, 2)
+        return this.delay(seconds.toLong(), TimeUnit.SECONDS)
     }
 }
 

@@ -31,6 +31,10 @@ class MealCategoriesAdapter @Inject constructor() : ListAdapter<MealCategory, Si
 
         holder.itemView.setOnClickListener { itemClicks.accept(value) }
     }
+
+    override fun submitList(list: List<MealCategory>?) {
+        super.submitList(list)
+    }
 }
 
 class SimpleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -1,9 +1,6 @@
 package com.jtw.appetizing.feature.singlecategory
 
 import android.view.View
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.jtw.appetizing.core.ChoseMealEvent
 import com.jtw.appetizing.core.ChosenCategory
 import com.jtw.appetizing.core.ModelStore
@@ -20,7 +17,6 @@ class MealListPresenter @Inject constructor(
     fun bind(view: View, modelStore: ModelStore, setActivityTitle: (String) -> Unit): Disposable {
 
         mealsListView.bind(view)
-
 
         // Call render once synchronously (if we have the data) so that Android's
         // view-state-restoration will work properly
@@ -47,15 +43,4 @@ class MealListPresenter @Inject constructor(
                     }
         }
     }
-}
-
-
-// TODO JTW move
-fun RecyclerView.standardSetup(adapter: RecyclerView.Adapter<*>) {
-    this.adapter = adapter
-    layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-
-    val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
-    addItemDecoration(dividerItemDecoration)
-
 }
