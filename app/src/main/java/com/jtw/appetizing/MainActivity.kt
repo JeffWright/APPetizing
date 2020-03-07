@@ -9,6 +9,7 @@ import com.jtw.appetizing.core.*
 import com.jtw.appetizing.dagger.DaggerMainActivityComponent
 import com.jtw.appetizing.dagger.InjectionFragmentLifecycleCallbacks
 import com.jtw.appetizing.feature.categories.CategoriesListFragment
+import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
 import com.jtw.appetizing.network.Uninitialized
 import com.jtw.appetizing.util.log
 import com.jtw.appetizing.util.plusAssign
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         val viewModel: MainActivityViewModel by viewModels()
 
         if (savedInstanceState == null) {
-            replaceFragment(CategoriesListFragment(), container)
+            replaceFragment(CategoriesListFragment(), container_primary)
 
             modelStore.state.accept(AppState(
                     categories = Uninitialized,
@@ -59,6 +60,29 @@ class MainActivity : AppCompatActivity() {
             viewModel.model?.let {
                 modelStore.state.accept(it)
             }
+
+            ///////////
+            supportFragmentManager.findFragmentByTag("DETAILS")
+                    ?.let { detailFragment ->
+                        supportFragmentManager.beginTransaction()
+                                .remove(detailFragment)
+                                .commit()
+                       
+                        supportFragmentManager.beginTransaction()
+                                .replace(R.id.container_primary, MealDetailsFragment())
+
+                                .setCustomAnimations(
+                                        R.anim.slide_in_right,
+                                        R.anim.slide_out_left,
+                                        R.anim.slide_in_left,
+                                        R.anim.slide_out_right
+                                )
+
+                                .addToBackStack(null)
+                                .commit()
+                    }
+            ///////////
+
         }
 
         disposable += modelStore.state.subscribe {
@@ -66,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        navigator.bind(container)
+        navigator.bind(container_primary)
     }
 
 }

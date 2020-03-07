@@ -39,7 +39,7 @@ class Navigator @Inject constructor(
                                 R.anim.slide_in_left,
                                 R.anim.slide_out_right
                         )
-                        .replace(R.id.container, MealsListFragment())
+                        .replace(R.id.container_primary, MealsListFragment())
                         .addToBackStack(null)
                         .commit();
             }
@@ -53,8 +53,8 @@ class Navigator @Inject constructor(
                                 R.anim.slide_in_left,
                                 R.anim.slide_out_right
                         )
-                        .replace(R.id.container, MealDetailsFragment())
-                        .addToBackStack(null)
+                        .replace(R.id.container_secondary, MealDetailsFragment(), "DETAILS")
+                        // .addToBackStack(null)
                         .commit();
             }
         }
