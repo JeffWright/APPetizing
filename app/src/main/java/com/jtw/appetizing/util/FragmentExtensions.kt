@@ -39,7 +39,7 @@ fun FragmentManager.replaceFragment(
     }
 }
 
-private inline fun FragmentManager.transaction(
+inline fun FragmentManager.transaction(
         backstack: Boolean = true,
         action: FragmentTransaction.() -> Unit
 ) {

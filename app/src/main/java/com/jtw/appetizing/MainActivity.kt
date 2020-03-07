@@ -11,17 +11,16 @@ import com.jtw.appetizing.dagger.InjectionFragmentLifecycleCallbacks
 import com.jtw.appetizing.feature.categories.CategoriesListFragment
 import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
 import com.jtw.appetizing.network.Uninitialized
-import com.jtw.appetizing.util.log
-import com.jtw.appetizing.util.plusAssign
-import com.jtw.appetizing.util.replaceFragment
+import com.jtw.appetizing.util.transaction
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_container.*
 import javax.inject.Inject
+import javax.inject.Provider
 
 class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var navigator: Navigator
-    @Inject lateinit var modelStore: AppetizingModelStore
+    @Inject lateinit var modelStoreProvider: Provider<AppetizingModelStore>
 
     private val daggerComponent = DaggerMainActivityComponent
             .builder()
@@ -45,9 +44,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.fragment_container)
 
         val viewModel: MainActivityViewModel by viewModels()
+        val modelStore = viewModel.modelStore ?: modelStoreProvider.get()
+        viewModel.modelStore = modelStore
+
+        val primaryContainerId = container_primary.id
+        val secondaryContainerId = (container_secondary ?: container_primary).id
+        val isTwoPane = container_secondary != null
 
         if (savedInstanceState == null) {
-            replaceFragment(CategoriesListFragment(), container_primary)
+            supportFragmentManager.transaction(false) {
+                replace(R.id.container_primary, CategoriesListFragment())
+            }
 
             modelStore.state.accept(AppState(
                     categories = Uninitialized,
@@ -56,45 +63,52 @@ class MainActivity : AppCompatActivity() {
 
             modelStore.onEvent(RequestLoadCategoriesEvent)
         } else {
-            log("restore")
-            viewModel.model?.let {
-                modelStore.state.accept(it)
-            }
-
-            ///////////
-            supportFragmentManager.findFragmentByTag("DETAILS")
+            supportFragmentManager.findFragmentByTag(MealDetailsFragment.TAG)
                     ?.let { detailFragment ->
-                        supportFragmentManager.beginTransaction()
-                                .remove(detailFragment)
-                                .commit()
-                       
-                        supportFragmentManager.beginTransaction()
-                                .replace(R.id.container_primary, MealDetailsFragment())
+                        // There is a detail fragment active, but it's not where we want it
 
-                                .setCustomAnimations(
-                                        R.anim.slide_in_right,
-                                        R.anim.slide_out_left,
-                                        R.anim.slide_in_left,
-                                        R.anim.slide_out_right
-                                )
+                        // So, first, remove it
+                        supportFragmentManager.transaction(false) {
+                            remove(detailFragment)
+                        }
 
-                                .addToBackStack(null)
-                                .commit()
+                        // Then put it in the right location
+                        val containerIdForDetails = if (isTwoPane) {
+                            supportFragmentManager.popBackStack()
+                            secondaryContainerId
+                        } else {
+                            primaryContainerId
+                        }
+
+                        supportFragmentManager.transaction(!isTwoPane) {
+                            replace(containerIdForDetails, MealDetailsFragment(), MealDetailsFragment.TAG)
+
+                            setCustomAnimations(
+                                    R.anim.slide_in_right,
+                                    R.anim.slide_out_left,
+                                    R.anim.slide_in_left,
+                                    R.anim.slide_out_right
+                            )
+                        }
                     }
-            ///////////
 
         }
 
-        disposable += modelStore.state.subscribe {
-            viewModel.model = it
-        }
+        navigator.bind(
+                modelStore,
+                container_primary.id,
+                secondaryContainerId
+        )
 
+    }
 
-        navigator.bind(container_primary)
+    override fun onPause() {
+        super.onPause()
+        navigator.unbind()
     }
 
 }
 
 class MainActivityViewModel : ViewModel() {
-    var model: AppState? = null
+    var modelStore: AppetizingModelStore? = null
 }

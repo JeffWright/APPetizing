@@ -6,12 +6,14 @@ import com.jtw.appetizing.core.ChosenMeal
 import com.jtw.appetizing.core.RenderedView
 import com.jtw.appetizing.network.*
 import com.jtw.appetizing.network.pojo.ingredients
+import com.jtw.appetizing.network.pojo.tags
 import kotlinx.android.synthetic.main.loading.view.*
 import kotlinx.android.synthetic.main.meal_details.view.*
 import javax.inject.Inject
 
 class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
     override fun bind(view: View) {
+        view.ingredients_and_instructions.alpha = 0f
     }
 
     override fun render(view: View, model: ChosenMeal) {
@@ -28,10 +30,9 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
                 view.ingredients_and_instructions.visibility = View.VISIBLE
                 view.loading.visibility = View.GONE
 
-                // view.ingredients_and_instructions.animate()
-                //         .alpha(1f)
-                //         .setDuration(250)
-                // }
+                view.ingredients_and_instructions.animate()
+                        .alpha(1f)
+                        .setDuration(250)
 
                 view.ingredients.text = meal.ingredients()
                         .map { (ingredient, amount) ->
@@ -41,6 +42,8 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
 
                 view.instructions.text = meal.strInstructions
                         .replace("\n", "\n\n")
+
+                view.tags.text = meal.tags().joinToString("  |  ")
 
 
             }

@@ -10,8 +10,8 @@ data class MealDetails(
         val strMeal: String,
         val strMealThumb: String,
         val strSource: Any,
-        val strTags: String,
-        val strYoutube: String,
+        val strTags: String?,
+        val strYoutube: String?,
 
         val strIngredient1: String?,
         val strIngredient2: String?,
@@ -81,4 +81,8 @@ fun MealDetails.ingredients(): Map<String, String?> {
             strIngredient19?.takeIf { it.isNotBlank() }?.let { it to strMeasure19 },
             strIngredient20?.takeIf { it.isNotBlank() }?.let { it to strMeasure20 }
     ).toMap()
+}
+
+fun MealDetails.tags(): List<String> {
+    return strTags?.split(",") ?: emptyList()
 }

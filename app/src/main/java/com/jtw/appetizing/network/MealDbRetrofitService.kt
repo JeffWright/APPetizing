@@ -7,7 +7,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.random.Random
 
 interface MealDbRetrofitService {
     companion object {
@@ -49,10 +51,8 @@ class MealDbService @Inject constructor(
     }
 
     private fun <T> Single<T>.makeFlaky(): Single<T> {
-        // val seconds = Random(0).nextInt(0, 2)
-        // return this.delay(seconds.toLong(), TimeUnit.SECONDS)
-
-        return this
+        val seconds = Random(0).nextInt(0, 5)
+        return this.delay(seconds.toLong(), TimeUnit.SECONDS)
     }
 }
 
