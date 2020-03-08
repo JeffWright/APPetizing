@@ -18,7 +18,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -80,7 +80,9 @@ dependencies {
     testImplementation(Mockk)
 
     androidTestImplementation("androidx.test.ext:junit:1.1.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    // androidTestImplementation(JUnit)
+    androidTestImplementation(Espresso)
+    androidTestImplementation("androidx.test:rules:1.2.0")
 
 }
 

@@ -47,3 +47,4 @@ object Glide {
 
 const val JUnit = "junit:junit:4.12"
 const val Mockk = "io.mockk:mockk:1.9.3"
+const val Espresso = "androidx.test.espresso:espresso-core:3.2.0"
