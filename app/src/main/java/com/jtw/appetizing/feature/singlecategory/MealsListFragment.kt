@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.jtw.appetizing.MainActivity
 import com.jtw.appetizing.MainActivityViewModel
 import com.jtw.appetizing.R
+import com.jtw.appetizing.core.AppState
 import com.jtw.appetizing.core.ChosenCategory
 import com.jtw.appetizing.core.ModelStore
 import com.jtw.appetizing.dagger.MainActivityComponent
@@ -20,7 +21,7 @@ class MealsListFragment : DisposableFragment() {
 
     @Inject lateinit var mealsPresenter: MealListPresenter
 
-    private val modelStore: ModelStore by lazy {
+    private val modelStore: ModelStore<AppState> by lazy {
         val viewModel: MainActivityViewModel by (activity as AppCompatActivity).viewModels()
         requireNotNull(viewModel.modelStore)
     }

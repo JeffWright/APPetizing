@@ -9,7 +9,7 @@ import javax.inject.Inject
 class AppetizingModelStore(
         initialState: AppState,
         private val mealDbService: MealDbService
-) : BaseModelStore() {
+) : BaseModelStore<AppState>(initialState) {
 
     class Factory @Inject constructor(
             private val mealDbService: MealDbService
@@ -20,9 +20,6 @@ class AppetizingModelStore(
         )
     }
 
-    init {
-        state.accept(initialState)
-    }
 
     override fun handleEffect(effect: Effect) {
         when (effect) {

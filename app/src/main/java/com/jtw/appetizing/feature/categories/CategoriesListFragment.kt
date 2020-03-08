@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.jtw.appetizing.MainActivity
 import com.jtw.appetizing.MainActivityViewModel
 import com.jtw.appetizing.R
+import com.jtw.appetizing.core.AppState
 import com.jtw.appetizing.core.ModelStore
 import com.jtw.appetizing.dagger.MainActivityComponent
 import com.jtw.appetizing.feature.mealdetails.DisposableFragment
@@ -18,17 +19,13 @@ class CategoriesListFragment : DisposableFragment() {
 
     @Inject lateinit var presenter: CategoryListPresenter
 
-    private val modelStore: ModelStore by lazy {
+    private val modelStore: ModelStore<AppState> by lazy {
         val viewModel: MainActivityViewModel by (activity as AppCompatActivity).viewModels()
         requireNotNull(viewModel.modelStore)
     }
 
     override fun inject(component: MainActivityComponent) {
         component.inject(this)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

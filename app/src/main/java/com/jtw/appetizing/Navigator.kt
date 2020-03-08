@@ -21,7 +21,7 @@ class Navigator @Inject constructor(
     @IdRes private var secondaryContainerId: Int = 0
     private var isTwoPane: Boolean = false
 
-    fun bind(modelStore: BaseModelStore, @IdRes primaryContainerId: Int, @IdRes secondaryContainerId: Int) {
+    fun bind(modelStore: ModelStore<AppState>, @IdRes primaryContainerId: Int, @IdRes secondaryContainerId: Int) {
         this.primaryContainerId = primaryContainerId
         this.secondaryContainerId = secondaryContainerId
         isTwoPane = primaryContainerId != secondaryContainerId
@@ -33,7 +33,6 @@ class Navigator @Inject constructor(
 
     fun unbind() {
         disposable.clear()
-        disposable.dispose()
     }
 
     private fun handleEffect(effect: NavigationEffect) {

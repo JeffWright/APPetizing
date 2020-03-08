@@ -27,13 +27,7 @@ class MealCategoriesAdapter @Inject constructor() : ListAdapter<MealCategory, Si
         val value = getItem(position)
         textView.text = value.strCategory
 
-        // holder.itemView.image.visibility = View.GONE
-
         holder.itemView.setOnClickListener { itemClicks.accept(value) }
-    }
-
-    override fun submitList(list: List<MealCategory>?) {
-        super.submitList(list)
     }
 }
 

@@ -12,7 +12,7 @@ class MealListPresenter @Inject constructor(
 
     override fun AppState.mapToModel() = chosenCategory as? ChosenCategory.Actual
 
-    override fun bind(view: View, modelStore: ModelStore): Disposable {
+    override fun bind(view: View, modelStore: ModelStore<AppState>): Disposable {
         return compositeDisposableOf {
             +super.bind(view, modelStore)
 

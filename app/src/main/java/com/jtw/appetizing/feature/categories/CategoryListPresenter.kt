@@ -14,7 +14,7 @@ class CategoryListPresenter @Inject constructor(
 
     override fun AppState.mapToModel() = categories
 
-    override fun bind(view: View, modelStore: ModelStore): Disposable {
+    override fun bind(view: View, modelStore: ModelStore<AppState>): Disposable {
         return compositeDisposableOf {
             +super.bind(view, modelStore)
 
