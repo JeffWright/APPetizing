@@ -33,6 +33,7 @@ class Navigator @Inject constructor(
 
     fun unbind() {
         disposable.clear()
+        disposable.dispose()
     }
 
     private fun handleEffect(effect: NavigationEffect) {

@@ -6,17 +6,14 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 abstract class DisposableFragment : DaggerFragment() {
-    private var disposable: CompositeDisposable? = CompositeDisposable()
+    private var disposable: CompositeDisposable = CompositeDisposable()
 
     fun addToDisposable(childDisposable: Disposable) {
-        val disposable = disposable ?: CompositeDisposable()
         disposable += childDisposable
-        this.disposable = disposable
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposable?.clear()
-        disposable = null
+        disposable.clear()
     }
 }
