@@ -10,7 +10,7 @@ import io.reactivex.functions.BiFunction
 abstract class BaseModelStore<STATE>(
         initialState: STATE
 ) : ModelStore<STATE> {
-    protected val state: BehaviorRelay<STATE> = BehaviorRelay.create()
+    private val state: BehaviorRelay<STATE> = BehaviorRelay.create()
     private val events: PublishRelay<Event> = PublishRelay.create()
     private val effects: PublishRelay<Effect> = PublishRelay.create()
     protected val disposable = CompositeDisposable()

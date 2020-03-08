@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.jakewharton.rxrelay2.PublishRelay
-import com.jtw.appetizing.*
+import com.jtw.appetizing.Navigator
+import com.jtw.appetizing.R
+import com.jtw.appetizing.core.ChoseMealEvent
 import com.jtw.appetizing.domain.MealWithThumbnail
 import com.jtw.appetizing.feature.categories.SimpleViewHolder
 import kotlinx.android.synthetic.main.list_item.view.*
@@ -14,7 +16,7 @@ import javax.inject.Inject
 
 class MealsAdapter @Inject constructor() : ListAdapter<MealWithThumbnail, SimpleViewHolder>(DiffUtil) {
 
-    val itemClicks = PublishRelay.create<MealWithThumbnail>()
+    val itemClicks = PublishRelay.create<ChoseMealEvent>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimpleViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -30,11 +32,15 @@ class MealsAdapter @Inject constructor() : ListAdapter<MealWithThumbnail, Simple
         Glide.with(imageView).load(meal.mealThumb).into(imageView)
 
         holder.itemView.setOnClickListener {
-            sharedElementViewImage = imageView
-            sharedElementViewText = textView
-            imageView.transitionName = transitionNameImage
-            textView.transitionName = transitionNameText
-            itemClicks.accept(meal)
+            imageView.transitionName = Navigator.transitionNameImage
+            textView.transitionName = Navigator.transitionNameText
+            itemClicks.accept(ChoseMealEvent(
+                    meal.idMeal,
+                    meal.strMeal,
+                    meal.mealThumb,
+                    textView,
+                    imageView
+            ))
         }
     }
 }

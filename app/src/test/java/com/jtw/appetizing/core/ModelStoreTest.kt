@@ -2,20 +2,17 @@ package com.jtw.appetizing.core
 
 import com.jtw.appetizing.domain.MealCategory
 import com.jtw.appetizing.domain.MealId
-import com.jtw.appetizing.network.MealDbService
 import com.jtw.appetizing.network.Success
 import com.jtw.appetizing.network.Uninitialized
 import com.jtw.appetizing.network.pojo.MealDetails
-import com.jtw.appetizing.util.shouldBe
-import com.jtw.appetizing.util.shouldBeInstance
-import com.jtw.appetizing.util.shouldContain
+import com.jtw.appetizing.util.*
 import io.mockk.mockk
 import org.junit.Test
 
 class ModelStoreTest {
 
-    val initialSate = AppState(categories = Uninitialized)
-    private val objectUnderTest = AppetizingModelStore(initialSate, mockk<MealDbService>())
+    private val initialSate = AppState(categories = Uninitialized)
+    private val objectUnderTest = AppetizingModelStore(initialSate, mockk())
 
     private val testState = AppState(
             categories = Success(listOf(MealCategory("cat1"), MealCategory("cat2")))
@@ -62,11 +59,17 @@ class ModelStoreTest {
     fun `handles ChoseMealEvent`() {
         val mealId = MealId("ID")
 
-        val result = objectUnderTest.reduce(testState, ChoseMealEvent(mealId, "mealName", "url"))
+        val result = objectUnderTest.reduce(testState, ChoseMealEvent(
+                mealId,
+                "mealName",
+                "url",
+                mockk(),
+                mockk()
+        ))
 
         result.state!!.chosenMeal shouldBe ChosenMeal(mealId, "mealName", "url")
         result.effects shouldContain LoadMealDetailsEffect(mealId)
-        result.effects shouldContain ShowMealDetailsEffect
+        result.effects.shouldContainInstance<ShowMealDetailsEffect>()
     }
 
     @Test

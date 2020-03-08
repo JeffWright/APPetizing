@@ -1,6 +1,5 @@
 package com.jtw.appetizing
 
-import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentManager
 import com.jtw.appetizing.core.*
@@ -15,6 +14,12 @@ import javax.inject.Inject
 class Navigator @Inject constructor(
         private val fragmentManager: FragmentManager
 ) {
+
+    companion object {
+        // Names for Shared Element Transition
+        const val transitionNameImage: String = "imageTransition"
+        const val transitionNameText: String = "textTransition"
+    }
 
     private val disposable = CompositeDisposable()
     @IdRes private var primaryContainerId: Int = 0
@@ -50,8 +55,8 @@ class Navigator @Inject constructor(
             }
             is ShowMealDetailsEffect -> {
                 fragmentManager.transaction(backstack = !isTwoPane) {
-                    addSharedElement(sharedElementViewText, transitionNameText)
-                    addSharedElement(sharedElementViewImage, transitionNameImage)
+                    addSharedElement(effect.sharedElementViewText, transitionNameText)
+                    addSharedElement(effect.sharedElementViewImage, transitionNameImage)
                     setCustomAnimations(
                             R.anim.slide_in_right,
                             R.anim.slide_out_left,
@@ -65,9 +70,4 @@ class Navigator @Inject constructor(
     }
 }
 
-// TODO JTW
-lateinit var sharedElementViewText: View
-lateinit var sharedElementViewImage: View
-val transitionNameImage: String = "imageTransition"
-val transitionNameText: String = "textTransition"
 

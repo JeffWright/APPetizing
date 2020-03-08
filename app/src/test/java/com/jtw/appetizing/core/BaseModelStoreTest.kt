@@ -16,10 +16,10 @@ class BaseModelStoreTest {
     class SimpleModelStore : BaseModelStore<SimpleState>(SimpleState("hello", 0)) {
         override fun reduce(previousState: SimpleState, event: Event): Next<SimpleState> {
             if (event is AddOneEvent) {
-                if (previousState.number % 2 == 0) {
-                    return Next(previousState.copy(number = previousState.number + 1), effects = listOf(EvenEffect))
+                return if (previousState.number % 2 == 0) {
+                    Next(previousState.copy(number = previousState.number + 1), effects = listOf(EvenEffect))
                 } else {
-                    return Next(previousState.copy(number = previousState.number + 1))
+                    Next(previousState.copy(number = previousState.number + 1))
                 }
             }
 

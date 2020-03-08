@@ -31,8 +31,7 @@ class MealCategoriesAdapter @Inject constructor() : ListAdapter<MealCategory, Si
     }
 }
 
-class SimpleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-}
+class SimpleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
 private object DiffUtil : DiffUtil.ItemCallback<MealCategory>() {
     override fun areItemsTheSame(oldItem: MealCategory, newItem: MealCategory): Boolean {

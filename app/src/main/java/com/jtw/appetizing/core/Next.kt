@@ -9,7 +9,6 @@ open class Next<STATE>(
 
     companion object {
         fun <STATE> effect(effect: Effect) = Next<STATE>(effects = listOf(effect))
-        fun <STATE> effects(effects: List<Effect>) = Next<STATE>(effects = effects)
 
         // class effects<STATE>(effects: List<Effect>) = Next<STATE>(effects)
         //

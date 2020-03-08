@@ -1,6 +1,7 @@
 package com.jtw.appetizing.core
 
 import android.view.View
+import com.jtw.appetizing.util.compositeDisposableOf
 import com.jtw.appetizing.util.mapNotNull
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,12 +21,17 @@ abstract class Presenter<MODEL : Any> {
         modelStore.currentState?.mapToModel()
                 ?.let { renderedView.render(view, it) }
 
-        return modelStore.stateObservable
-                .mapNotNull { it.mapToModel() }
-                .distinctUntilChanged()
-                .observeOn(deliveryScheduler())
-                .subscribe { model ->
-                    renderedView.render(view, model)
-                }
+        return compositeDisposableOf {
+
+            +modelStore.stateObservable
+                    .mapNotNull { it.mapToModel() }
+                    .distinctUntilChanged()
+                    .observeOn(deliveryScheduler())
+                    .subscribe { model ->
+                        renderedView.render(view, model)
+                    }
+
+            +renderedView.events.subscribe(modelStore::onEvent)
+        }
     }
 }

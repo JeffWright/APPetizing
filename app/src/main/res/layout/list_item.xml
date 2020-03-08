@@ -7,6 +7,8 @@
     android:background="?selectableItemBackground"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
     android:minHeight="48dp"
     android:gravity="center_vertical"
     android:orientation="horizontal">
@@ -15,7 +17,8 @@
         android:id="@+id/image"
         android:src="@drawable/food_icon"
         android:layout_width="100dp"
-        android:layout_height="100dp" />
+        android:layout_height="100dp"
+        android:contentDescription="@string/cont_desc_meal_image" />
 
     <TextView
         android:id="@+id/text_view"

@@ -6,4 +6,5 @@
     <string name="error">Oops! Something went wrong.  Please try again.</string>
     <string name="no_meal_selected">No meal selected</string>
     <string name="reload">Reload</string>
+    <string name="cont_desc_meal_image">Image of a meal</string>
 </resources>

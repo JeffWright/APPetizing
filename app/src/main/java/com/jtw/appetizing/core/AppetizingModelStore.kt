@@ -58,6 +58,12 @@ class AppetizingModelStore(
                         effects = listOf(LoadMealsEffect(event.category), ShowMealsListEffect)
                 )
             }
+            is RetryCategoryEvent -> {
+                val category = (previousState.chosenCategory as? ChosenCategory.Actual)?.category
+                        ?: return Next.noChange()
+                return Next.effect(LoadMealsEffect(category))
+            }
+
             is LoadedMealsForCategoryEvent -> {
                 return Next(previousState.copy(
                         chosenCategory = (previousState.chosenCategory as? ChosenCategory.Actual)
@@ -78,7 +84,9 @@ class AppetizingModelStore(
                                         event.imageUrl
                                 )
                         ),
-                        effects = listOf(LoadMealDetailsEffect(event.mealId), ShowMealDetailsEffect)
+                        effects = listOf(
+                                LoadMealDetailsEffect(event.mealId),
+                                ShowMealDetailsEffect(event.sharedElementViewText, event.sharedElementViewImage))
                 )
             }
             is LoadedMealDetailsEvent -> {
@@ -86,6 +94,10 @@ class AppetizingModelStore(
                         chosenMeal = previousState.chosenMeal
                                 ?.copy(mealDetails = event.result)
                 ))
+            }
+            is RetryMealEvent -> {
+                val mealId = previousState.chosenMeal?.mealId ?: return Next.noChange()
+                return Next.effect(LoadMealDetailsEffect(mealId))
             }
         }
 

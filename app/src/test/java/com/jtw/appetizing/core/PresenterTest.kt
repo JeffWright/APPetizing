@@ -14,7 +14,7 @@ import org.junit.Test
 class PresenterTest {
 
 
-    class SomePresenter() : Presenter<String>() {
+    class SomePresenter : Presenter<String>() {
 
         override fun deliveryScheduler(): Scheduler = synchronousScheduler()
 

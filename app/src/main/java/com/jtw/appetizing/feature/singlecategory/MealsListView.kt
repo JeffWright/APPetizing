@@ -1,9 +1,8 @@
 package com.jtw.appetizing.feature.singlecategory
 
 import android.view.View
-import com.jtw.appetizing.core.ChosenCategory
-import com.jtw.appetizing.core.RenderedView
-import com.jtw.appetizing.domain.MealWithThumbnail
+import com.jakewharton.rxrelay2.PublishRelay
+import com.jtw.appetizing.core.*
 import com.jtw.appetizing.network.*
 import com.jtw.appetizing.util.hide
 import com.jtw.appetizing.util.show
@@ -18,7 +17,8 @@ class MealsListView @Inject constructor(
         private val adapter: MealsAdapter
 ) : RenderedView<ChosenCategory.Actual> {
 
-    val itemClicks: Observable<MealWithThumbnail> = adapter.itemClicks
+    val itemClicks: Observable<ChoseMealEvent> = adapter.itemClicks
+    override val events = PublishRelay.create<Event>()
 
     override fun bind(view: View) {
         view.recycler.standardSetup(adapter)
@@ -26,10 +26,7 @@ class MealsListView @Inject constructor(
 
     override fun render(view: View, model: ChosenCategory.Actual) {
 
-        setActivityTitle(model.category.strCategory)
-
-        val meals = model.mealsInCategory
-        when (meals) {
+        when (val meals = model.mealsInCategory) {
             is Success -> {
                 show(view.recycler)
                 hide(view.loading, view.error)
@@ -42,12 +39,12 @@ class MealsListView @Inject constructor(
             is Fail -> {
                 show(view.error)
                 hide(view.recycler, view.loading)
+
+                view.error.retry_button.setOnClickListener {
+                    events.accept(RetryCategoryEvent)
+                }
             }
         }
 
-    }
-
-    private fun setActivityTitle(title: String) {
-        // TODO("Not yet implemented")
     }
 }

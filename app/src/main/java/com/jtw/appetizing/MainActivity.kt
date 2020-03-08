@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
     fun showToolbarBackButton(shown: Boolean) {

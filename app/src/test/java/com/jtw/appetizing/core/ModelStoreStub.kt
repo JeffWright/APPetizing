@@ -7,8 +7,7 @@ import io.reactivex.Observable
 class ModelStoreStub : ModelStore<AppState> {
 
     val stateRelay = BehaviorRelay.create<AppState>()
-    val effectsRelay = PublishRelay.create<Effect>()
-    val eventsRelay = PublishRelay.create<Event>()
+    private val effectsRelay = PublishRelay.create<Effect>()
 
     override val stateObservable = stateRelay
     override val currentState: AppState? get() = stateRelay.value

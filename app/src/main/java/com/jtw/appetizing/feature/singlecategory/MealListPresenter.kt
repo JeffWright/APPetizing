@@ -16,9 +16,12 @@ class MealListPresenter @Inject constructor(
         return compositeDisposableOf {
             +super.bind(view, modelStore)
 
+            // TODO seems like we should be able to combine these
             +renderedView.itemClicks
-                    .map { ChoseMealEvent(it.idMeal, it.strMeal, it.mealThumb) }
                     .subscribe(modelStore::onEvent)
+            //
+            // +renderedView.events
+            //         .subscribe(modelStore::onEvent)
         }
     }
 }

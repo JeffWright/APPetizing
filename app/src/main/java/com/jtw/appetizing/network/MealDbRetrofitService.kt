@@ -32,14 +32,14 @@ class MealDbService @Inject constructor(
     fun getCategories(): Observable<Async<List<MealCategory>>> {
         return backingService.getCategories()
                 .map { it.meals }
-                // .makeFlaky()
+                .makeFlaky()
                 .toAsync()
     }
 
     fun getMealsForCategory(category: MealCategory): Observable<Async<List<MealWithThumbnail>>> {
         return backingService.getMealsForCategory(category.strCategory)
-                .map { it.meals.map { MealWithThumbnail(it) } }
-                // .makeFlaky()
+                .map { it.meals.map { pojo -> MealWithThumbnail(pojo) } }
+                .makeFlaky()
                 // .makeFail()
                 .toAsync()
     }
@@ -47,15 +47,26 @@ class MealDbService @Inject constructor(
     fun getMealDetails(mealId: MealId): Observable<Async<MealDetails>> {
         return backingService.getMealDetails(mealId)
                 .map { it.meals.first() }
-                // .makeFlaky()
+                .makeFlaky()
                 .toAsync()
     }
 
+    @Suppress("UNUSED")
     private fun <T> Single<T>.makeFlaky(): Single<T> {
-        val seconds = Random(0).nextInt(0, 5)
-        return this.delay(seconds.toLong(), TimeUnit.SECONDS)
+        val randInt = Random.nextInt(0, 100)
+        return if (randInt <= 13) {
+            this
+        } else if (randInt <= 46) {
+            val millis = Random.nextInt(0, 3000)
+            this.delay(millis.toLong(), TimeUnit.MILLISECONDS)
+        } else {
+            val millis = Random.nextInt(0, 3000)
+            this.delay(millis.toLong(), TimeUnit.MILLISECONDS)
+                    .makeFail()
+        }
     }
 
+    @Suppress("UNUSED")
     private fun <T> Single<T>.makeFail(): Single<T> {
         return this.map { throw Exception("Manufactured Exception") }
     }
