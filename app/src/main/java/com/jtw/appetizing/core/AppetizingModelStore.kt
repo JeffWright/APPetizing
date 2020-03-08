@@ -72,10 +72,6 @@ class AppetizingModelStore(
                 ))
             }
             is ChoseMealEvent -> {
-                if (previousState.chosenMeal?.mealId == event.mealId) {
-                    return Next.noChange()
-                }
-
                 return Next(
                         state = previousState.copy(
                                 chosenMeal = ChosenMeal(

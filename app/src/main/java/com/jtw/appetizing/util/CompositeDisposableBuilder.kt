@@ -5,7 +5,8 @@ import io.reactivex.disposables.Disposable
 
 class CompositeDisposableBuilder {
     val composite = CompositeDisposable()
-    operator fun Disposable.unaryPlus() {
+    operator fun Disposable?.unaryPlus() {
+        this ?: return
         composite += this
     }
 }

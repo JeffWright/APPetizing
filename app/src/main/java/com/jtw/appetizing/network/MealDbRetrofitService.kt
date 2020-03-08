@@ -54,7 +54,7 @@ class MealDbService @Inject constructor(
     @Suppress("UNUSED")
     private fun <T> Single<T>.makeFlaky(): Single<T> {
         val randInt = Random.nextInt(0, 100)
-        return if (randInt <= 13) {
+        return if (randInt <= 113) {
             this
         } else if (randInt <= 46) {
             val millis = Random.nextInt(0, 3000)

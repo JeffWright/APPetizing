@@ -6,6 +6,6 @@ import io.reactivex.disposables.Disposable
 
 interface RenderedView<MODEL> {
     val events: Observable<Event>
-    fun bind(view: View): Disposable
+    fun bind(view: View): Disposable?
     fun render(view: View, model: MODEL)
 }

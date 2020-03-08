@@ -23,6 +23,7 @@ abstract class BaseModelStore<STATE>(
 
     init {
         disposable += compositeDisposableOf {
+
             events.subscribe { event ->
                 log("--> event: $event")
             }

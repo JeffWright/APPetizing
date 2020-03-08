@@ -9,7 +9,7 @@ import com.jtw.appetizing.util.*
 import io.mockk.mockk
 import org.junit.Test
 
-class ModelStoreTest {
+class AppetizingModelStoreTest {
 
     private val initialSate = AppState(categories = Uninitialized)
     private val objectUnderTest = AppetizingModelStore(initialSate, mockk())
