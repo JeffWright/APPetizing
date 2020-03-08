@@ -14,14 +14,14 @@ abstract class Presenter<MODEL : Any> {
     protected open fun deliveryScheduler(): Scheduler = AndroidSchedulers.mainThread()
 
     open fun bind(view: View, modelStore: ModelStore<AppState>): Disposable {
-        renderedView.bind(view)
-
-        // Call render once synchronously (if we have the data) so that Android's
-        // view-state-restoration will work properly
-        modelStore.currentState?.mapToModel()
-                ?.let { renderedView.render(view, it) }
-
         return compositeDisposableOf {
+            +renderedView.bind(view)
+
+            // Call render once synchronously (if we have the data) so that Android's
+            // view-state-restoration will work properly
+            modelStore.currentState?.mapToModel()
+                    ?.let { renderedView.render(view, it) }
+
 
             +modelStore.stateObservable
                     .mapNotNull { it.mapToModel() }

@@ -3,6 +3,7 @@ package com.jtw.appetizing
 import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentManager
 import com.jtw.appetizing.core.*
+import com.jtw.appetizing.dagger.ApplicationScoped
 import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
 import com.jtw.appetizing.feature.singlecategory.MealsListFragment
 import com.jtw.appetizing.util.filterIsInstance
@@ -11,6 +12,7 @@ import com.jtw.appetizing.util.transaction
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
+@ApplicationScoped
 class Navigator @Inject constructor(
         private val fragmentManager: FragmentManager
 ) {
@@ -27,6 +29,8 @@ class Navigator @Inject constructor(
     private var isTwoPane: Boolean = false
 
     fun bind(modelStore: ModelStore<AppState>, @IdRes primaryContainerId: Int, @IdRes secondaryContainerId: Int) {
+        unbind()
+
         this.primaryContainerId = primaryContainerId
         this.secondaryContainerId = secondaryContainerId
         isTwoPane = primaryContainerId != secondaryContainerId

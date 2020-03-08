@@ -1,13 +1,12 @@
 package com.jtw.appetizing.feature.singlecategory
 
 import android.view.View
+import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxrelay2.PublishRelay
 import com.jtw.appetizing.core.*
 import com.jtw.appetizing.network.*
-import com.jtw.appetizing.util.hide
-import com.jtw.appetizing.util.show
-import com.jtw.appetizing.util.standardSetup
-import io.reactivex.Observable
+import com.jtw.appetizing.util.*
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.error.view.*
 import kotlinx.android.synthetic.main.list.view.*
 import kotlinx.android.synthetic.main.loading.view.*
@@ -17,15 +16,21 @@ class MealsListView @Inject constructor(
         private val adapter: MealsAdapter
 ) : RenderedView<ChosenCategory.Actual> {
 
-    val itemClicks: Observable<ChoseMealEvent> = adapter.itemClicks
     override val events = PublishRelay.create<Event>()
 
-    override fun bind(view: View) {
+    override fun bind(view: View): Disposable {
         view.recycler.standardSetup(adapter)
+        return compositeDisposableOf {
+            +adapter.itemClicks
+                    .subscribe(events)
+
+            +RxView.clicks(view.error.retry_button)
+                    .map { RetryCategoryEvent }
+                    .subscribe(events)
+        }
     }
 
     override fun render(view: View, model: ChosenCategory.Actual) {
-
         when (val meals = model.mealsInCategory) {
             is Success -> {
                 show(view.recycler)
@@ -39,10 +44,6 @@ class MealsListView @Inject constructor(
             is Fail -> {
                 show(view.error)
                 hide(view.recycler, view.loading)
-
-                view.error.retry_button.setOnClickListener {
-                    events.accept(RetryCategoryEvent)
-                }
             }
         }
 

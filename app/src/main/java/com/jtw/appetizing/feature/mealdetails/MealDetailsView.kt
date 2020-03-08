@@ -2,6 +2,7 @@ package com.jtw.appetizing.feature.mealdetails
 
 import android.view.View
 import com.bumptech.glide.Glide
+import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxrelay2.PublishRelay
 import com.jtw.appetizing.core.*
 import com.jtw.appetizing.network.*
@@ -9,6 +10,7 @@ import com.jtw.appetizing.network.pojo.ingredients
 import com.jtw.appetizing.network.pojo.tags
 import com.jtw.appetizing.util.hide
 import com.jtw.appetizing.util.show
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.error.view.*
 import kotlinx.android.synthetic.main.loading.view.*
 import kotlinx.android.synthetic.main.meal_details.view.*
@@ -18,8 +20,12 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
 
     override val events = PublishRelay.create<Event>()
 
-    override fun bind(view: View) {
+    override fun bind(view: View): Disposable {
         view.ingredients_and_instructions.alpha = 0f
+
+        return RxView.clicks(view.error.retry_button)
+                .map { RetryMealEvent }
+                .subscribe(events)
     }
 
     override fun render(view: View, model: ChosenMeal) {
@@ -63,10 +69,6 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
             is Fail -> {
                 show(view.error)
                 hide(view.ingredients_and_instructions, view.loading)
-
-                view.error.retry_button.setOnClickListener {
-                    events.accept(RetryMealEvent)
-                }
             }
         }
     }

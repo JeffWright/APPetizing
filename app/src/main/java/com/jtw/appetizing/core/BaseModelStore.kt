@@ -2,6 +2,8 @@ package com.jtw.appetizing.core
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
+import com.jtw.appetizing.util.compositeDisposableOf
+import com.jtw.appetizing.util.log
 import com.jtw.appetizing.util.plusAssign
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -20,28 +22,33 @@ abstract class BaseModelStore<STATE>(
     override val currentState: STATE? get() = state.value
 
     init {
-        disposable += Observable.zip<STATE, Event, Next<STATE>>(
-                        state,
-                        events,
-                        BiFunction { previousState, event -> reduce(previousState, event) }
-                )
-                .subscribe { next ->
-                    next.effects.forEach { effects.accept(it) }
-                    (next.state ?: state.value)?.let {
-                        state.accept(it)
-                    }
-                }
+        disposable += compositeDisposableOf {
+            events.subscribe { event ->
+                log("--> event: $event")
+            }
+            +effects.subscribe { effect ->
+                log("<-- effect: $effect")
+            }
+            +state.subscribe { state ->
+                log("STATE: $state ")
+            }
 
-        disposable += effects.subscribe(::handleEffect)
+            +Observable.zip<STATE, Event, Next<STATE>>(
+                            state,
+                            events,
+                            BiFunction { previousState, event -> reduce(previousState, event) }
+                    )
+                    .subscribe { next ->
+                        next.effects.forEach { effects.accept(it) }
+                        (next.state ?: state.value)?.let {
+                            state.accept(it)
+                        }
+                    }
+
+            +effects.subscribe(::handleEffect)
+        }
 
         state.accept(initialState)
-
-        // disposable += state.subscribe { state ->
-        //     log("State output: $state ")
-        // }
-        // disposable += events.subscribe { event ->
-        //     log("Event input: $event")
-        // }
     }
 
     override fun onEvent(event: Event) = events.accept(event)
