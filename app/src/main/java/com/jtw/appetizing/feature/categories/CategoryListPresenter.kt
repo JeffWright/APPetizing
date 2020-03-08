@@ -1,35 +1,27 @@
 package com.jtw.appetizing.feature.categories
 
 import android.view.View
-import com.jtw.appetizing.core.ChoseCategoryEvent
-import com.jtw.appetizing.core.ModelStore
+import com.jtw.appetizing.core.*
+import com.jtw.appetizing.domain.MealCategory
+import com.jtw.appetizing.network.Async
 import com.jtw.appetizing.util.compositeDisposableOf
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 
 class CategoryListPresenter @Inject constructor(
-        private val categoryListView: CategoryListView
-) {
+        override val renderedView: CategoryListView
+) : Presenter<Async<List<MealCategory>>>() {
 
-    fun bind(view: View, modelStore: ModelStore): Disposable {
-        categoryListView.bind(view)
+    override fun AppState.mapToModel() = categories
 
-        // Call render once synchronously (if we have the data) so that Android's
-        // view-state-restoration will work properly
-        modelStore.currentState?.categories
-                ?.let { categoryListView.render(view, it) }
-
+    override fun bind(view: View, modelStore: ModelStore): Disposable {
         return compositeDisposableOf {
-            +categoryListView.itemClicks
+            +super.bind(view, modelStore)
+
+            +renderedView.itemClicks
                     .subscribe {
                         modelStore.onEvent(ChoseCategoryEvent(it))
                     }
-
-            +modelStore.stateObservable
-                    .map { it.categories }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { categoryListView.render(view, it) }
         }
     }
 }

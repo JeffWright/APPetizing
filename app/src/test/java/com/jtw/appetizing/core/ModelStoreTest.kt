@@ -4,6 +4,7 @@ import com.jtw.appetizing.domain.MealCategory
 import com.jtw.appetizing.domain.MealId
 import com.jtw.appetizing.network.MealDbService
 import com.jtw.appetizing.network.Success
+import com.jtw.appetizing.network.Uninitialized
 import com.jtw.appetizing.network.pojo.MealDetails
 import com.jtw.appetizing.util.shouldBe
 import com.jtw.appetizing.util.shouldBeInstance
@@ -13,7 +14,8 @@ import org.junit.Test
 
 class ModelStoreTest {
 
-    private val objectUnderTest = AppetizingModelStore(mockk<MealDbService>())
+    val initialSate = AppState(categories = Uninitialized)
+    private val objectUnderTest = AppetizingModelStore(initialSate, mockk<MealDbService>())
 
     private val testState = AppState(
             categories = Success(listOf(MealCategory("cat1"), MealCategory("cat2")))
@@ -74,7 +76,7 @@ class ModelStoreTest {
                 chosenMeal = ChosenMeal(mealId, "mealName", "url")
         )
         val mealDetails = mockk<MealDetails>()
-       
+
         val result = objectUnderTest.reduce(testStateWithCategory, LoadedMealDetailsEvent(Success(mealDetails)))
 
         result.state!!.chosenMeal?.mealDetails?.get() shouldBe mealDetails

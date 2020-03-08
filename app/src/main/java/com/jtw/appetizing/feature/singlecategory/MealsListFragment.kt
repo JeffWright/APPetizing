@@ -33,9 +33,7 @@ class MealsListFragment : DisposableFragment() {
         val view = inflater.inflate(R.layout.list, container, false)
         view.tag = "MealsListFragment"
         addToDisposable(
-                mealsPresenter.bind(view, modelStore) {
-                    activity?.title = getString(R.string.title_meals, it)
-                }
+                mealsPresenter.bind(view, modelStore)
         )
 
         val chosenCategory = modelStore.currentState?.chosenCategory as? ChosenCategory.Actual

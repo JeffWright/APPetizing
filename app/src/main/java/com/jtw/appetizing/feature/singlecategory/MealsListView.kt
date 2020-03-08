@@ -24,11 +24,11 @@ class MealsListView @Inject constructor(
         view.recycler.standardSetup(adapter)
     }
 
-    override fun render(view: View, category: ChosenCategory.Actual) {
+    override fun render(view: View, model: ChosenCategory.Actual) {
 
-        setActivityTitle(category.category.strCategory)
+        setActivityTitle(model.category.strCategory)
 
-        val meals = category.mealsInCategory
+        val meals = model.mealsInCategory
         when (meals) {
             is Success -> {
                 show(view.recycler)

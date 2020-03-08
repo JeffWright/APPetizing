@@ -2,10 +2,7 @@ package com.jtw.appetizing.feature.singlecategory
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jtw.appetizing.R
-import com.jtw.appetizing.core.AppState
-import com.jtw.appetizing.core.Event
 import com.jtw.appetizing.core.ModelStore
 import io.mockk.every
 import io.mockk.mockk
@@ -13,12 +10,13 @@ import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 
-class MealListPresenterTest {
+class PresenterTest {
 
     private val adapter = mockk<MealsAdapter>(relaxed = true)
-    private val modelStore = ModelStoreStub()
+    private val modelStore: ModelStore = TODO()//ModelStoreStub()
 
-    private val objectUnderTest = MealListPresenter(adapter)
+    private val mealsListView: MealsListView = TODO()
+    private val objectUnderTest = MealListPresenter(mealsListView)
 
     private val view = mockk<View>()
     private val recycler = mockk<RecyclerView>(relaxed = true)
@@ -36,10 +34,10 @@ class MealListPresenterTest {
     }
 }
 
-class ModelStoreStub : ModelStore {
-    override val state: BehaviorRelay<AppState> = BehaviorRelay.create()
-
-    override fun onEvent(event: Event) {
-    }
-
-}
+// class ModelStoreStub : ModelStore {
+//     override val state: BehaviorRelay<AppState> = BehaviorRelay.create()
+//
+//     override fun onEvent(event: Event) {
+//     }
+//
+// }
