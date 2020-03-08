@@ -2,6 +2,7 @@ package com.jtw.appetizing
 
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.jtw.appetizing.core.*
@@ -56,6 +57,9 @@ class MainActivity : AppCompatActivity() {
         daggerComponent.inject(this)
 
         setContentView(if (isTwoPane) R.layout.fragment_container_two_pane else R.layout.fragment_container)
+
+        showToolbarBackButton(true)
+
 
         viewModel.modelStore = modelStore
 
@@ -139,6 +143,19 @@ class MainActivity : AppCompatActivity() {
     private fun shouldBeTwoPane(): Boolean {
         val configuration = resources.configuration
         return configuration.screenWidthDp >= TWO_PANE_WIDTH
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    fun showToolbarBackButton(shown: Boolean) {
+        supportActionBar?.setDisplayShowHomeEnabled(shown)
+        supportActionBar?.setDisplayHomeAsUpEnabled(shown)
     }
 }
 

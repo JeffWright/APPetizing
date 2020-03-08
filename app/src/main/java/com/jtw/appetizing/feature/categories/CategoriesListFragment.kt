@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.jtw.appetizing.MainActivity
 import com.jtw.appetizing.MainActivityViewModel
 import com.jtw.appetizing.R
 import com.jtw.appetizing.core.ModelStore
@@ -36,7 +37,8 @@ class CategoriesListFragment : DisposableFragment() {
         addToDisposable(
                 presenter.bind(view, modelStore)
         )
-        activity?.title = getString(R.string.categories)
+        activity?.title = getString(R.string.app_name)
+        (activity as? MainActivity)?.showToolbarBackButton(false)
         return view
     }
 }
