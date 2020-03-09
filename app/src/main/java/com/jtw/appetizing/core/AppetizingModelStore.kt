@@ -8,7 +8,7 @@ import javax.inject.Inject
 /**
  * A [ModelStore] that owns the AppState that powers the app
  *
- * Handles all [Event]s And [Effects] (except [NavigationEffect]s, which are handled by [Navigator])
+ * Handles all [Event]s And [Effect]s (except [NavigationEffect]s, which are handled by [Navigator])
  */
 @ApplicationScoped
 class AppetizingModelStore(

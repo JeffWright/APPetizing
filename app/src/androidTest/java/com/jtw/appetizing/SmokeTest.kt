@@ -16,9 +16,7 @@ import org.junit.runner.RunWith
 
 
 /**
- * Instrumented test, which will execute on an Android device.
- *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * Performs a simple smoke test to make sure the basic flow of the application works as expected
  */
 @RunWith(AndroidJUnit4::class)
 class SmokeTest {
@@ -31,7 +29,7 @@ class SmokeTest {
         onView(withText("Breakfast")).perform(click())
 
         Thread.sleep(2000)
-        onView(withText("Full English Breakfast")).perform(click())
+        onView(withText("Breakfast Potatoes")).perform(click())
 
         Thread.sleep(2000)
 
@@ -44,13 +42,12 @@ class SmokeTest {
                     return false
                 }
 
-                return item.contains("Greasy") &&
-                        item.contains("UnHealthy") &&
-                        item.contains("HangoverFood")
+                return item.contains("Breakfast") &&
+                        item.contains("Brunch")
             }
 
         }
-        onView(withText(stringMatcher)).check(matches(isDisplayed()));
+        onView(withText(stringMatcher)).check(matches(isDisplayed()))
     }
 
 }

@@ -83,6 +83,7 @@ class ActivityModule {
 
         val retrofitService = retrofit.create(MealDbRetrofitService::class.java)
 
+        @Suppress("ConstantConditionIf")
         return if (BuildConfig.SIMULATE_POOR_NETWORK) {
             FlakyMealDbService(retrofitService)
         } else {

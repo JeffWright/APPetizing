@@ -49,6 +49,7 @@ class PresenterTest {
 
         modelStore.stateRelay.accept(AppState(Uninitialized, chosenMeal = sampleMeal))
 
+        objectUnderTest.renderedView.boundView shouldBe view
         objectUnderTest.renderedView.renderedModels.size shouldBe 1
         objectUnderTest.renderedView.renderedModels shouldContain "MEAL"
     }
@@ -67,6 +68,7 @@ class PresenterTest {
             modelStore.stateRelay.accept(AppState(Uninitialized, chosenMeal = sampleMeal))
         }
 
+        objectUnderTest.renderedView.boundView shouldBe view
         objectUnderTest.renderedView.renderedModels.size shouldBe 3
     }
 }
