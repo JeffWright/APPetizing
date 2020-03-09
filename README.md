@@ -34,3 +34,5 @@ To simulate poor network conditions, change `simulate_poor_network=true` in grad
 Given more time, I would:
 
 * Add a debug menu to turn on the flaky network toggle (instead of using gradle.properties)
+* Add mocked network results so that the smoke test doesn't depend on real data
+* Add a wakelock to the meal details screen (I hate it when my phone turns off when I'm cooking and I have to wash my hands to turn it back on)
