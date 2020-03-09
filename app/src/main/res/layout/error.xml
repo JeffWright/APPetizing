@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:layout_margin="16dp"
+    android:layout_margin="@dimen/spacing"
     android:orientation="vertical"
     android:visibility="gone"
     tools:visibility="visible">
@@ -17,12 +17,13 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:tint="@color/error"
-        app:srcCompat="@drawable/ic_error" />
+        app:srcCompat="@drawable/ic_error"
+        android:contentDescription="@string/cont_desc_error_icon" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/spacing"
         android:gravity="center_horizontal"
         android:text="@string/error" />
 
@@ -31,7 +32,7 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/spacing"
         android:text="@string/reload" />
 </LinearLayout>
 

@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">APPetizing</string>
+    <string name="loading">Cargando…</string>
+    <string name="error">¡Uy! Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="no_meal_selected">Ninguna comida seleccionada</string>
+    <string name="reload">Recargar</string>
+    <string name="cont_desc_meal_image">Imagen de una comida</string>
+    <string name="cont_desc_error_icon">Icono de error</string>
+</resources>

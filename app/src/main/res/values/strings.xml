@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">APPetizing</string>
-    <string name="categories">Categories</string>
-    <string name="title_meals">%s Meals</string>
     <string name="loading">Loading…</string>
     <string name="error">Oops! Something went wrong.  Please try again.</string>
     <string name="no_meal_selected">No meal selected</string>
     <string name="reload">Reload</string>
     <string name="cont_desc_meal_image">Image of a meal</string>
+    <string name="cont_desc_error_icon">Error icon</string>
 </resources>

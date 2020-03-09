@@ -34,6 +34,7 @@ android {
         val debug by getting {
             signingConfig = signingConfigs.findByName("debug")
             isMinifyEnabled = false
+            isPseudoLocalesEnabled = true
         }
         val release by getting {
             isMinifyEnabled = true
