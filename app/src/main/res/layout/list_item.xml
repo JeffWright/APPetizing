@@ -18,7 +18,7 @@
         android:src="@drawable/food_icon"
         android:layout_width="@dimen/image_size"
         android:layout_height="@dimen/image_size"
-        android:contentDescription="@string/cont_desc_meal_image" />
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/text_view"
