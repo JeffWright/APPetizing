@@ -2,6 +2,7 @@ package com.jtw.appetizing.core
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.jakewharton.rxrelay2.PublishRelay
+import com.jtw.appetizing.BuildConfig
 import com.jtw.appetizing.util.compositeDisposableOf
 import com.jtw.appetizing.util.log
 import com.jtw.appetizing.util.plusAssign
@@ -24,16 +25,21 @@ abstract class BaseModelStore<STATE>(
     init {
         disposable += compositeDisposableOf {
 
-            events.subscribe { event ->
-                log("--> event: $event")
-            }
-            +effects.subscribe { effect ->
-                log("<-- effect: $effect")
-            }
-            +state.subscribe { state ->
-                log("STATE: $state ")
+            if (BuildConfig.DEBUG) {
+                +events.subscribe { event ->
+                    log("--> event: $event")
+                }
+                +effects.subscribe { effect ->
+                    log("<-- effect: $effect")
+                }
+                +state.subscribe { state ->
+                    log("STATE: $state ")
+                }
             }
 
+            // Create a cyclical observable, where outputs from state are reduced based on
+            // sequential events, yielding a new state (which goes back into [state]) and/or a set
+            // of effects
             +Observable.zip<STATE, Event, Next<STATE>>(
                             state,
                             events,
@@ -41,9 +47,7 @@ abstract class BaseModelStore<STATE>(
                     )
                     .subscribe { next ->
                         next.effects.forEach { effects.accept(it) }
-                        (next.state ?: state.value)?.let {
-                            state.accept(it)
-                        }
+                        (next.state ?: state.value)?.let { state.accept(it) }
                     }
 
             +effects.subscribe(::handleEffect)
@@ -53,9 +57,17 @@ abstract class BaseModelStore<STATE>(
     }
 
     override fun onEvent(event: Event) = events.accept(event)
-    fun onEffect(event: Effect) = effects.accept(event)
 
+    override fun onEffect(effect: Effect) = effects.accept(effect)
+
+    /**
+     * The core of the ModelStore. Given the most recent state and an incoming [Event], returns
+     * an updated state and/or a series of [Effect]s to trigger
+     */
     abstract fun reduce(previousState: STATE, event: Event): Next<STATE>
 
+    /**
+     * Requests that the given effect be processed
+     */
     abstract fun handleEffect(effect: Effect)
 }

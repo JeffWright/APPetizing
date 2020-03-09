@@ -1,14 +1,10 @@
 package com.jtw.appetizing.domain
 
-/** Matches the JSON output of TheMealDB */
-class MealWithThumbnailPojo(
-        val strMeal: String,
-        val strMealThumb: String,
-        val idMeal: MealId
-)
+import com.jtw.appetizing.network.pojo.MealWithThumbnailPojo
 
+/** Wraps a [MealWithThumbnailPojo] and exposes some cleaner names for those fields */
 data class MealWithThumbnail(val pojo: MealWithThumbnailPojo) {
-    val strMeal: String = pojo.strMeal
-    val mealThumb: String = pojo.strMealThumb
-    val idMeal: MealId = pojo.idMeal
+    val name: String = pojo.strMeal
+    val thumbnailUrl: String = pojo.strMealThumb
+    val id: MealId = pojo.idMeal
 }

@@ -5,6 +5,11 @@ import com.jtw.appetizing.network.MealDbService
 import com.jtw.appetizing.util.plusAssign
 import javax.inject.Inject
 
+/**
+ * A [ModelStore] that owns the AppState that powers the app
+ *
+ * Handles all [Event]s And [Effects] (except [NavigationEffect]s, which are handled by [Navigator])
+ */
 @ApplicationScoped
 class AppetizingModelStore(
         initialState: AppState,

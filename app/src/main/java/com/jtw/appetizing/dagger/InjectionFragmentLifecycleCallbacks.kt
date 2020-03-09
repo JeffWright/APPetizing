@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.jtw.appetizing.util.TAG
 
+/** Ensures that Fragments are automatically injected by Dagger */
 class InjectionFragmentLifecycleCallbacks(
         private val daggerComponent: MainActivityComponent
 ) : FragmentManager.FragmentLifecycleCallbacks() {

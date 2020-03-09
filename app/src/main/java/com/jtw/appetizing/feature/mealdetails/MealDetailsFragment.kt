@@ -5,16 +5,13 @@ import android.transition.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import com.jtw.appetizing.MainActivityViewModel
 import com.jtw.appetizing.R
-import com.jtw.appetizing.core.AppState
-import com.jtw.appetizing.core.ModelStore
+import com.jtw.appetizing.core.DisposableFragment
 import com.jtw.appetizing.dagger.MainActivityComponent
 import javax.inject.Inject
 
 
+/** This fragment shows a detail view for a particular meal */
 class MealDetailsFragment : DisposableFragment() {
 
     companion object {
@@ -22,12 +19,6 @@ class MealDetailsFragment : DisposableFragment() {
     }
 
     @Inject lateinit var presenter: MealDetailsPresenter
-
-    private val modelStore: ModelStore<AppState> by lazy {
-        val viewModel: MainActivityViewModel by (activity as AppCompatActivity).viewModels()
-        requireNotNull(viewModel.modelStore)
-    }
-
 
     override fun inject(component: MainActivityComponent) = component.inject(this)
 

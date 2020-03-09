@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.jakewharton.rxrelay2.PublishRelay
-import com.jtw.appetizing.Navigator
 import com.jtw.appetizing.R
 import com.jtw.appetizing.core.ChoseMealEvent
+import com.jtw.appetizing.core.Navigator
 import com.jtw.appetizing.domain.MealWithThumbnail
 import com.jtw.appetizing.feature.categories.SimpleViewHolder
 import kotlinx.android.synthetic.main.list_item.view.*
@@ -28,16 +28,16 @@ class MealsAdapter @Inject constructor() : ListAdapter<MealWithThumbnail, Simple
         val textView = holder.itemView.text_view
         val imageView = holder.itemView.image
         val meal = getItem(position)
-        textView.text = meal.strMeal
-        Glide.with(imageView).load(meal.mealThumb).into(imageView)
+        textView.text = meal.name
+        Glide.with(imageView).load(meal.thumbnailUrl).into(imageView)
 
         holder.itemView.setOnClickListener {
             imageView.transitionName = Navigator.transitionNameImage
             textView.transitionName = Navigator.transitionNameText
             itemClicks.accept(ChoseMealEvent(
-                    meal.idMeal,
-                    meal.strMeal,
-                    meal.mealThumb,
+                    meal.id,
+                    meal.name,
+                    meal.thumbnailUrl,
                     textView,
                     imageView
             ))
@@ -48,7 +48,7 @@ class MealsAdapter @Inject constructor() : ListAdapter<MealWithThumbnail, Simple
 private object DiffUtil : DiffUtil.ItemCallback<MealWithThumbnail>() {
     /** Do these represent the same core item */
     override fun areItemsTheSame(oldItem: MealWithThumbnail, newItem: MealWithThumbnail): Boolean {
-        return oldItem.idMeal == newItem.idMeal
+        return oldItem.id == newItem.id
     }
 
     /** Assuming these items DO represent the same core item, is their contents the same */

@@ -32,13 +32,21 @@ android {
 
     buildTypes {
         val debug by getting {
+
             signingConfig = signingConfigs.findByName("debug")
             isMinifyEnabled = false
             isPseudoLocalesEnabled = true
+
+            val simulate_poor_network: String by project
+
+            buildConfigField("boolean", "SIMULATE_POOR_NETWORK", simulate_poor_network)
         }
         val release by getting {
-            isMinifyEnabled = true
+            signingConfig = signingConfigs.findByName("debug")
+            isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), File("proguard-rules.pro"))
+
+            buildConfigField("boolean", "SIMULATE_POOR_NETWORK", "false")
         }
     }
 
@@ -62,7 +70,6 @@ dependencies {
     implementation(AndroidX.recyclerView)
 
     implementation(RxJava.rxJava)
-    implementation(RxJava.rxPreferences)
     implementation(RxJava.rxRelay)
     implementation(RxJava.rxBinding)
     implementation(RxJava.rxBindingRecyclerView)
@@ -80,10 +87,9 @@ dependencies {
     testImplementation(JUnit)
     testImplementation(Mockk)
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.1")
-    // androidTestImplementation(JUnit)
+    androidTestImplementation(JUnitForAndroidX)
+    androidTestImplementation(AndroidXTestRules)
     androidTestImplementation(Espresso)
-    androidTestImplementation("androidx.test:rules:1.2.0")
 
 }
 

@@ -6,10 +6,10 @@ import androidx.fragment.app.FragmentTransaction
 
 inline fun FragmentManager.transaction(
         backstack: Boolean = true,
-        action: FragmentTransaction.() -> Unit
+        block: FragmentTransaction.() -> Unit
 ) {
     beginTransaction().apply {
-        action()
+        block()
         if (backstack) {
             addToBackStack(null)
         }

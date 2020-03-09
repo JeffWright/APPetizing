@@ -1,8 +1,8 @@
-package com.jtw.appetizing
+package com.jtw.appetizing.core
 
 import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentManager
-import com.jtw.appetizing.core.*
+import com.jtw.appetizing.R
 import com.jtw.appetizing.dagger.ApplicationScoped
 import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
 import com.jtw.appetizing.feature.singlecategory.MealsListFragment
@@ -12,13 +12,16 @@ import com.jtw.appetizing.util.transaction
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
+/**
+ * Handles navigation transitions between screens
+ */
 @ApplicationScoped
 class Navigator @Inject constructor(
         private val fragmentManager: FragmentManager
 ) {
 
     companion object {
-        // Names for Shared Element Transition
+        /** Names for Shared Element Transitions */
         const val transitionNameImage: String = "imageTransition"
         const val transitionNameText: String = "textTransition"
     }
@@ -28,6 +31,7 @@ class Navigator @Inject constructor(
     @IdRes private var secondaryContainerId: Int = 0
     private var isTwoPane: Boolean = false
 
+    /** Attach this Navigator to the given layouts, and listen to [modelStore] for [NavigationEffect]s */
     fun bind(modelStore: ModelStore<AppState>, @IdRes primaryContainerId: Int, @IdRes secondaryContainerId: Int) {
         unbind()
 
@@ -40,6 +44,7 @@ class Navigator @Inject constructor(
                 .subscribe(::handleEffect)
     }
 
+    /** Detach this Navigator, and clear its subscription to the ModelStore */
     fun unbind() {
         disposable.clear()
     }

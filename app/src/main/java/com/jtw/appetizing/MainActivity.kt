@@ -1,10 +1,10 @@
 package com.jtw.appetizing
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.jtw.appetizing.core.*
 import com.jtw.appetizing.dagger.DaggerMainActivityComponent
 import com.jtw.appetizing.dagger.InjectionFragmentLifecycleCallbacks
@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
     private val fragmentLifecycleCallbacks = InjectionFragmentLifecycleCallbacks(daggerComponent)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("JTW", "onCreate: ")
         supportFragmentManager.registerFragmentLifecycleCallbacks(
                 fragmentLifecycleCallbacks,
                 true
@@ -56,54 +55,69 @@ class MainActivity : AppCompatActivity() {
 
         daggerComponent.inject(this)
 
-        setContentView(if (isTwoPane) R.layout.fragment_container_two_pane else R.layout.fragment_container)
-
-        showToolbarBackButton(true)
-
+        val contentLayoutId = if (isTwoPane) R.layout.fragment_container_two_pane else R.layout.fragment_container
+        setContentView(contentLayoutId)
 
         viewModel.modelStore = modelStore
 
         if (savedInstanceState == null) {
+            // Brand new activity, so show the initial fragment
             supportFragmentManager.transaction(false) {
                 replace(R.id.container_primary, CategoriesListFragment())
             }
 
             modelStore.onEvent(RequestLoadCategoriesEvent)
         } else {
-
             if (savedInstanceState.getBoolean(BUNDLE_KEY_TWO_PANE) != isTwoPane) {
+                // There are two possible locations where the MealDetailsFragment could be
+                // (primary pane, if it's the only one, or secondary pane if that exists)
+                //
+                // If we're restoring a state where the details fragment is in a different place,
+                // we need to ensure it ends up in the right spot
 
                 // TODO JTW extract method
                 supportFragmentManager.findFragmentByTag(MealDetailsFragment.TAG)
                         ?.let { detailFragment ->
                             // There is a detail fragment active, but it's not where we want it
-
-                            // So, first, remove it
-                            supportFragmentManager.transaction(false) {
-                                remove(detailFragment)
-                            }
-
-                            // Then put it in the right location
-                            val containerIdForDetails = if (isTwoPane) {
-                                supportFragmentManager.popBackStack()
-                                secondaryContainerId
-                            } else {
-                                primaryContainerId
-                            }
-
-                            supportFragmentManager.transaction(!isTwoPane) {
-                                replace(containerIdForDetails, MealDetailsFragment(), MealDetailsFragment.TAG)
-
-                                setCustomAnimations(
-                                        R.anim.slide_in_right,
-                                        R.anim.slide_out_left,
-                                        R.anim.slide_in_left,
-                                        R.anim.slide_out_right
-                                )
-                            }
+                            putDetailFragmentInCorrectLocation(detailFragment)
                         }
             }
 
+        }
+    }
+
+    private fun putDetailFragmentInCorrectLocation(detailFragment: Fragment) {
+        // First remove the old detail fragment, which is in the wrong spot
+        if (isTwoPane) {
+            // If the new layout is two-paned (and the old one wasn't), we want to pop the backstack
+            // so that the primary pane is showing the list of meals
+            supportFragmentManager.popBackStack()
+        } else {
+            // If the new layout is single-paned (and the old one wasn't), we just want to remove
+            // the detailFragment, since it was targetted to the secondary pane which no longer
+            // exists
+            supportFragmentManager.transaction(false) {
+                remove(detailFragment)
+            }
+        }
+
+        // Then put a new one in the right location
+        val containerIdForDetails = if (isTwoPane) {
+            secondaryContainerId
+        } else {
+            primaryContainerId
+        }
+
+       
+        supportFragmentManager.transaction(!isTwoPane) {
+            replace(containerIdForDetails, MealDetailsFragment(), MealDetailsFragment.TAG)
+
+            setCustomAnimations(
+                    R.anim.slide_in_right,
+                    R.anim.slide_out_left,
+                    R.anim.slide_in_left,
+                    R.anim.slide_out_right
+            )
         }
     }
 

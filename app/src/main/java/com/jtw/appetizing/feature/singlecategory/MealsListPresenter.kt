@@ -5,7 +5,7 @@ import com.jtw.appetizing.core.ChosenCategory
 import com.jtw.appetizing.core.Presenter
 import javax.inject.Inject
 
-class MealListPresenter @Inject constructor(
+class MealsListPresenter @Inject constructor(
         override val renderedView: MealsListView
 ) : Presenter<ChosenCategory.Actual>() {
 

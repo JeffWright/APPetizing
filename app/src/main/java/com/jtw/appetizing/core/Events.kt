@@ -10,14 +10,21 @@ import com.jtw.appetizing.network.pojo.MealDetails
 
 interface Event
 
+/** Request the initial load of available categories */
 object RequestLoadCategoriesEvent : Event
+
+/** Signals that the categories data was loaded */
 data class LoadedCategoriesEvent(val result: Async<List<MealCategory>>) : Event
 
+/** Signals that the user chose a category */
 data class ChoseCategoryEvent(val category: MealCategory) : Event
-data class LoadedMealsForCategoryEvent(val result: Async<List<MealWithThumbnail>>) : Event
-object RetryCategoryEvent : Event
 
+/** Signals that data for a category was loaded */
+data class LoadedMealsForCategoryEvent(val result: Async<List<MealWithThumbnail>>) : Event
+
+/** Signals that the user chose a meal */
 data class ChoseMealEvent(
+        /** The ID for the meal */
         val mealId: MealId,
         /** Optimization so that the next page can show something while waiting for the network */
         val mealName: String,
@@ -29,6 +36,8 @@ data class ChoseMealEvent(
         val sharedElementViewImage: ImageView
 ) : Event
 
+/** Signals that data for a meal was loaded */
 data class LoadedMealDetailsEvent(val result: Async<MealDetails>) : Event
-object RetryMealEvent : Event
 
+object RetryMealEvent : Event
+object RetryCategoryEvent : Event

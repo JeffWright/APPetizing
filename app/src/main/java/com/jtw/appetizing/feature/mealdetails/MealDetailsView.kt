@@ -4,6 +4,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxrelay2.PublishRelay
+import com.jtw.appetizing.R
 import com.jtw.appetizing.core.*
 import com.jtw.appetizing.network.*
 import com.jtw.appetizing.network.pojo.ingredients
@@ -51,16 +52,23 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
 
                 view.ingredients.text = meal.ingredients()
                         .map { (ingredient, amount) ->
-                            "$ingredient  --  $amount"
+                            if (amount.isNullOrBlank()) {
+                                ingredient
+                            } else {
+                                view.resources.getString(
+                                        R.string.ingredient_with_amount,
+                                        ingredient,
+                                        amount
+                                )
+                            }
                         }
                         .joinToString("\n")
 
+                // Many recipes become much more readable with an extra line break
                 view.instructions.text = meal.strInstructions
                         .replace("\n", "\n\n")
 
                 view.tags.text = meal.tags().joinToString("  |  ")
-
-
             }
             is Uninitialized, is Loading -> {
                 show(view.loading)

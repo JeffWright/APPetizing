@@ -6,4 +6,5 @@
     <string name="reload">Reload</string>
     <string name="cont_desc_meal_image">Image of a meal</string>
     <string name="cont_desc_error_icon">Error icon</string>
+    <string name="ingredient_with_amount">%1$s  —  %2$s</string>
 </resources>

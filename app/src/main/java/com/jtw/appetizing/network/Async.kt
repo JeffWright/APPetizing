@@ -31,10 +31,35 @@ class Success<T>(private val value: T) : Async<T>() {
 
 class Loading<T> : Async<T>() {
     override fun toString() = "Loading"
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 }
 
 class Fail<T>(val error: Throwable) : Async<T>() {
     override fun toString() = "Fail(${error.message})"
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Fail<*>
+
+        if (error != other.error) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return error.hashCode()
+    }
 }
 
 object Uninitialized : Async<Nothing>() {

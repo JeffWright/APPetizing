@@ -4,27 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import com.jtw.appetizing.MainActivity
-import com.jtw.appetizing.MainActivityViewModel
 import com.jtw.appetizing.R
-import com.jtw.appetizing.core.AppState
 import com.jtw.appetizing.core.ChosenCategory
-import com.jtw.appetizing.core.ModelStore
+import com.jtw.appetizing.core.DisposableFragment
 import com.jtw.appetizing.dagger.MainActivityComponent
-import com.jtw.appetizing.feature.mealdetails.DisposableFragment
 import javax.inject.Inject
 
 
 class MealsListFragment : DisposableFragment() {
 
-    @Inject lateinit var mealsPresenter: MealListPresenter
-
-    private val modelStore: ModelStore<AppState> by lazy {
-        val viewModel: MainActivityViewModel by (activity as AppCompatActivity).viewModels()
-        requireNotNull(viewModel.modelStore)
-    }
+    @Inject lateinit var mealsPresenter: MealsListPresenter
 
     override fun inject(component: MainActivityComponent) {
         component.inject(this)
@@ -37,11 +27,14 @@ class MealsListFragment : DisposableFragment() {
                 mealsPresenter.bind(view, modelStore)
         )
 
-        val chosenCategory = modelStore.currentState?.chosenCategory as? ChosenCategory.Actual
-        requireNotNull(chosenCategory)
-        activity?.title = chosenCategory.category.strCategory
-        (activity as? MainActivity)?.showToolbarBackButton(true)
+        setActivityTitle(modelStore.currentState?.chosenCategory)
         return view
+    }
+
+    private fun setActivityTitle(chosenCategory: ChosenCategory?) {
+        val actualCategory = chosenCategory as? ChosenCategory.Actual ?: return
+        activity?.title = actualCategory.category.strCategory
+        (activity as? MainActivity)?.showToolbarBackButton(true)
     }
 
 }

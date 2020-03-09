@@ -3,10 +3,12 @@ package com.jtw.appetizing.dagger
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import com.jtw.appetizing.BuildConfig
 import com.jtw.appetizing.MainActivity
 import com.jtw.appetizing.feature.categories.CategoriesListFragment
 import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
 import com.jtw.appetizing.feature.singlecategory.MealsListFragment
+import com.jtw.appetizing.network.FlakyMealDbService
 import com.jtw.appetizing.network.MealDbRetrofitService
 import dagger.*
 import okhttp3.Cache
@@ -79,7 +81,13 @@ class ActivityModule {
                 .baseUrl(MealDbRetrofitService.BASE_URL)
                 .build()
 
-        return retrofit.create(MealDbRetrofitService::class.java)
+        val retrofitService = retrofit.create(MealDbRetrofitService::class.java)
+
+        return if (BuildConfig.SIMULATE_POOR_NETWORK) {
+            FlakyMealDbService(retrofitService)
+        } else {
+            retrofitService
+        }
     }
 }
 

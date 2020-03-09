@@ -35,6 +35,7 @@ class MealsListView @Inject constructor(
             is Success -> {
                 show(view.recycler)
                 hide(view.loading, view.error)
+
                 adapter.submitList(meals.get())
             }
             is Loading, is Uninitialized -> {
