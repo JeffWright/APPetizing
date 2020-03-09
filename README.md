@@ -14,11 +14,16 @@ APPetizing makes it easy to view recipes on the go!
 
 ## Try it out
 
-Run the app:
+#### Setup
+`echo path/to/your/SDK > local.properties`
+
+or `cp local.properties.sample local.properties` and then edit `local.properties`
+
+#### Run the app:
 
 `./gradlew installRelease`
 
-Run the tests:
+#### Run the tests:
 
 `./gradlew check`
 

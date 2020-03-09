@@ -15,4 +15,7 @@ class ModelStoreStub : ModelStore<AppState> {
     override fun onEvent(event: Event) {
     }
 
+    override fun onEffect(effect: Effect) {
+    }
+
 }
