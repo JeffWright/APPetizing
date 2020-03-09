@@ -6,5 +6,6 @@
     <string name="reload">Recargar</string>
     <string name="cont_desc_meal_image">Imagen de una comida</string>
     <string name="cont_desc_error_icon">Icono de error</string>
-    <string name="ingredient_with_amount">%1$s (%2$s)</string>
+    <string name="ingredients">Ingredientes</string>
+    <string name="instructions">Instrucciones</string>
 </resources>

@@ -7,6 +7,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <View
+        android:id="@+id/header_scrim"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_of_title_area"
+        android:background="@color/colorAccent" />
+
     <ImageView
         android:id="@+id/image"
         android:layout_width="@dimen/image_size"
@@ -28,7 +39,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image">
+        app:layout_constraintTop_toBottomOf="@id/bottom_of_title_area">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,16 +49,44 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/ingredients"
+                android:id="@+id/ingredients_header"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing"
+                android:text="@string/ingredients" />
+
+            <TextView
+                android:id="@+id/ingredients"
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing"
+                android:lineSpacingMultiplier="1.4"
                 tools:text="1 lb Rice\n1 lb Shrimp" />
+
+            <View
+                android:background="@color/colorPrimary"
+                android:layout_marginStart="@dimen/spacing_double"
+                android:layout_marginEnd="@dimen/spacing_double"
+                android:layout_marginBottom="@dimen/spacing_half"
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
+
+            <TextView
+                android:id="@+id/instructions_header"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing"
+                android:text="@string/instructions" />
 
             <TextView
                 android:id="@+id/instructions"
+                android:textColor="@android:color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_half"
+                android:lineSpacingMultiplier="1.2"
                 tools:text="@tools:sample/lorem/random" />
         </LinearLayout>
     </ScrollView>
@@ -57,6 +96,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing"
+        android:layout_marginEnd="@dimen/spacing"
         android:layout_marginTop="@dimen/spacing"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:transitionName="textTransition"
@@ -67,18 +107,47 @@
 
     <TextView
         android:id="@+id/tags"
+        android:textColor="@android:color/black"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_half"
+        android:paddingBottom="@dimen/spacing_half"
         android:layout_marginStart="@dimen/spacing"
         app:layout_constraintStart_toStartOf="@id/meal_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/meal_name"
         tools:text="Seafood | Rice | Advanced" />
 
-    <include layout="@layout/loading" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/bottom_of_title_area"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="image,tags" />
 
-    <include layout="@layout/error" />
+    <FrameLayout
+        android:id="@+id/loading_frame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/bottom_of_title_area"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <include layout="@layout/loading" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/error_frame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/bottom_of_title_area"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <include layout="@layout/error" />
+    </FrameLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

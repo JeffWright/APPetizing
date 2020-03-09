@@ -24,9 +24,15 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
     override fun bind(view: View): Disposable {
         view.ingredients_and_instructions.alpha = 0f
 
+        // These are both wrapped in a FrameLayout to play nicely with the CoordinatorLayout, so
+        // their visibility is toggled by that instead of directly
+        show(view.error)
+        show(view.loading)
+
         return RxView.clicks(view.error.retry_button)
                 .map { RetryMealEvent }
                 .subscribe(events)
+
     }
 
     override fun render(view: View, model: ChosenMeal) {
@@ -39,16 +45,13 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
         when (val details = model.mealDetails) {
             is Success -> {
                 show(view.ingredients_and_instructions)
-                hide(view.error, view.loading)
-
-                val meal = details.get()
-
-                view.ingredients_and_instructions.visibility = View.VISIBLE
-                view.loading.visibility = View.GONE
+                hide(view.error_frame, view.loading_frame)
 
                 view.ingredients_and_instructions.animate()
                         .alpha(1f)
                         .setDuration(250)
+
+                val meal = details.get()
 
                 view.ingredients.text = meal.ingredients()
                         .map { (ingredient, amount) ->
@@ -68,15 +71,23 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
                 view.instructions.text = meal.strInstructions
                         .replace("\n", "\n\n")
 
-                view.tags.text = meal.tags().joinToString("  |  ")
+                val tagsText = meal.tags().joinToString("  |  ")
+                if (tagsText.isBlank()) {
+                    hide(view.tags)
+                } else {
+                    show(view.tags)
+                    view.tags.text = tagsText
+                }
             }
             is Uninitialized, is Loading -> {
-                show(view.loading)
-                hide(view.error, view.ingredients_and_instructions)
+                show(view.loading_frame)
+                hide(view.error_frame, view.ingredients_and_instructions)
+                hide(view.tags)
             }
             is Fail -> {
-                show(view.error)
-                hide(view.ingredients_and_instructions, view.loading)
+                show(view.error_frame)
+                hide(view.ingredients_and_instructions, view.loading_frame)
+                hide(view.tags)
             }
         }
     }

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.jtw.appetizing.R
 import com.jtw.appetizing.core.DisposableFragment
 import com.jtw.appetizing.dagger.MainActivityComponent
+import com.jtw.appetizing.util.hide
 import javax.inject.Inject
 
 
@@ -34,6 +35,8 @@ class MealDetailsFragment : DisposableFragment() {
         addToDisposable(
                 presenter.bind(view, modelStore)
         )
+
+        hide(container?.findViewById(R.id.no_meal_selected))
 
         return view
     }

@@ -19,6 +19,7 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/no_meal_selected"
             android:layout_gravity="center"
             android:text="@string/no_meal_selected"
             android:layout_width="wrap_content"
