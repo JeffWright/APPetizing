@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
                 // If we're restoring a state where the details fragment is in a different place,
                 // we need to ensure it ends up in the right spot
 
-                // TODO JTW extract method
                 supportFragmentManager.findFragmentByTag(MealDetailsFragment.TAG)
                         ?.let { detailFragment ->
                             // There is a detail fragment active, but it's not where we want it
@@ -108,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             primaryContainerId
         }
 
-       
+
         supportFragmentManager.transaction(!isTwoPane) {
             replace(containerIdForDetails, MealDetailsFragment(), MealDetailsFragment.TAG)
 

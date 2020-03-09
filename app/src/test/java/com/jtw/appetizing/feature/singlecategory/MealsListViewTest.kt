@@ -17,7 +17,6 @@ import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 
-// TODO same for CategoriesList and MealDetails?
 class MealsListViewTest {
     private val adapter: MealsAdapter = mockk(relaxed = true)
     private val objectUnderTest = MealsListView(adapter)
