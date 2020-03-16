@@ -7,6 +7,7 @@ import com.jtw.appetizing.network.Uninitialized
 import com.jtw.appetizing.network.pojo.MealDetails
 import com.jtw.appetizing.util.*
 import io.mockk.mockk
+import org.junit.Before
 import org.junit.Test
 
 class AppetizingModelStoreTest {
@@ -18,6 +19,11 @@ class AppetizingModelStoreTest {
             categories = Success(listOf(MealCategory("cat1"), MealCategory("cat2")))
     )
 
+    @Before
+    fun setup() {
+        logger = {}
+    }
+   
     @Test
     fun `handles RequestLoadCategoriesEvent`() {
         val result = objectUnderTest.reduce(testState, RequestLoadCategoriesEvent)

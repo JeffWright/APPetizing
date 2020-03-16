@@ -12,10 +12,7 @@ fun log(msg: String) {
         return
     }
 
-    try {
-        Log.d(TAG, msg)
-    } catch (exc: Exception) {
-        // Happens in unit tests, where Log.d isn't available
-    }
-
+    logger.invoke(msg)
 }
+
+var logger: (String) -> Unit = { Log.d(TAG, it) }

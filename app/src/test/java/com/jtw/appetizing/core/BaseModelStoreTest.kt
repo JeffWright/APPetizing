@@ -1,6 +1,8 @@
 package com.jtw.appetizing.core
 
+import com.jtw.appetizing.util.logger
 import com.jtw.appetizing.util.shouldBe
+import org.junit.Before
 import org.junit.Test
 
 class BaseModelStoreTest {
@@ -30,6 +32,11 @@ class BaseModelStoreTest {
         override fun handleEffect(effect: Effect) {
             seenEffects += effect
         }
+    }
+
+    @Before
+    fun setup() {
+        logger = {}
     }
 
     @Test

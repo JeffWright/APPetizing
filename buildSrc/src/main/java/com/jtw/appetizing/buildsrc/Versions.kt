@@ -1,6 +1,6 @@
 package com.jtw.appetizing.buildsrc
 
-const val gradle_android_version = "4.0.0-beta01"
+const val gradle_android_version = "3.6.1"
 
 object Kotlin {
     const val version = "1.3.70"

@@ -8,10 +8,7 @@ operator fun CompositeDisposable.plusAssign(disposable: Disposable) {
     add(disposable)
 }
 
-@Suppress("UNCHECKED_CAST")
-inline fun <reified OUT> Observable<*>.filterIsInstance(): Observable<OUT> {
-    return this.filter { it is OUT } as Observable<OUT>
-}
+inline fun <reified OUT> Observable<*>.filterIsInstance(): Observable<OUT> = ofType(OUT::class.java)
 
 fun <IN, OUT : Any> Observable<IN>.mapNotNull(mapper: (IN) -> OUT?): Observable<OUT> {
     return this.flatMap { input ->
