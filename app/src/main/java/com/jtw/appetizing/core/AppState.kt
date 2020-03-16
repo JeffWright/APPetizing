@@ -25,8 +25,8 @@ sealed class ChosenCategory {
 
 data class ChosenMeal(
         val mealId: MealId,
-        val mealName: String,
-        val imageUrl: String,
+        val mealName: String? = null,
+        val imageUrl: String? = null,
         val mealDetails: Async<MealDetails> = Uninitialized
 )
 

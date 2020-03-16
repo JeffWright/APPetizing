@@ -43,7 +43,7 @@ class BaseModelStoreTest {
     fun `events are handled strictly sequentially`() {
         val objectUnderTest = SimpleModelStore()
 
-        objectUnderTest.currentState?.number shouldBe 0
+        objectUnderTest.currentState.number shouldBe 0
 
         repeat(100) {
             Thread().run {
@@ -55,7 +55,7 @@ class BaseModelStoreTest {
 
         Thread.sleep(100)
 
-        objectUnderTest.currentState?.number shouldBe 100 * 3
+        objectUnderTest.currentState.number shouldBe 100 * 3
         objectUnderTest.seenEffects.size shouldBe 100 * 3 / 2
     }
 }

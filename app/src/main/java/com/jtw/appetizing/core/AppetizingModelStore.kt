@@ -100,6 +100,22 @@ class AppetizingModelStore(
                 val mealId = previousState.chosenMeal?.mealId ?: return Next.noChange()
                 return Next.effect(LoadMealDetailsEffect(mealId))
             }
+
+            is RestoreAppEvent -> {
+                val chosenCategory = event.mealCategory?.let { ChosenCategory.Actual(it) }
+                        ?: ChosenCategory.None
+                val chosenMeal = event.mealId?.let { ChosenMeal(it) }
+                val newState = previousState.copy(
+                        chosenCategory = chosenCategory,
+                        chosenMeal = chosenMeal
+                )
+
+                return Next(newState, effects = listOfNotNull(
+                        LoadCategoriesEffect,
+                        event.mealCategory?.let { LoadMealsEffect(it) },
+                        event.mealId?.let { LoadMealDetailsEffect(it) }
+                ))
+            }
         }
 
         return Next.noChange()

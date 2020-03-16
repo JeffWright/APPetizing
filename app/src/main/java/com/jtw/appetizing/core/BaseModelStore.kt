@@ -20,7 +20,7 @@ abstract class BaseModelStore<STATE>(
 
     override val stateObservable: Observable<STATE> get() = state.hide()
     override val effectsObservable: Observable<Effect> get() = effects.hide()
-    override val currentState: STATE? get() = state.value
+    override val currentState: STATE get() = state.value!!
 
     init {
         disposable += compositeDisposableOf {
@@ -41,10 +41,10 @@ abstract class BaseModelStore<STATE>(
             // sequential events, yielding a new state (which goes back into [state]) and/or a set
             // of effects
             +Observable.zip<STATE, Event, Next<STATE>>(
-                            state,
-                            events,
-                            BiFunction { previousState, event -> reduce(previousState, event) }
-                    )
+                    state,
+                    events,
+                    BiFunction { previousState, event -> reduce(previousState, event) }
+            )
                     .subscribe { next ->
                         next.effects.forEach { effects.accept(it) }
                         (next.state ?: state.value)?.let { state.accept(it) }

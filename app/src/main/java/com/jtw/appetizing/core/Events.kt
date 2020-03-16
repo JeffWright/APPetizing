@@ -41,3 +41,8 @@ data class LoadedMealDetailsEvent(val result: Async<MealDetails>) : Event
 
 object RetryMealEvent : Event
 object RetryCategoryEvent : Event
+
+data class RestoreAppEvent(
+        val mealCategory: MealCategory?,
+        val mealId: MealId?
+) : Event

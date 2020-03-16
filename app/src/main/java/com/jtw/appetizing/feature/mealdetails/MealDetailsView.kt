@@ -7,6 +7,7 @@ import com.jakewharton.rxrelay2.PublishRelay
 import com.jtw.appetizing.R
 import com.jtw.appetizing.core.*
 import com.jtw.appetizing.network.*
+import com.jtw.appetizing.network.pojo.MealDetails
 import com.jtw.appetizing.network.pojo.ingredients
 import com.jtw.appetizing.network.pojo.tags
 import com.jtw.appetizing.util.hide
@@ -35,12 +36,15 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
 
     }
 
-    override fun render(view: View, model: ChosenMeal) {
-        view.meal_name.text = model.mealName
 
-        Glide.with(view.image)
-                .load(model.imageUrl)
-                .into(view.image)
+    override fun render(view: View, model: ChosenMeal) {
+        view.meal_name.text = getMealName(model)
+
+        getMealImage(model)?.let { imageUrl ->
+            Glide.with(view.image)
+                    .load(imageUrl)
+                    .into(view.image)
+        }
 
         when (val details = model.mealDetails) {
             is Success -> {
@@ -90,5 +94,36 @@ class MealDetailsView @Inject constructor() : RenderedView<ChosenMeal> {
                 hide(view.tags)
             }
         }
+    }
+
+
+    /**
+     *  The meal name could come from either (or neither) of two places:
+     *  1. The ChosenMeal, in the case where a previous screen provided it for optimization
+     *  2. The actual data call ([MealDetails].strMeal) in the case of state restoration or
+     *     (in future) deeplinking
+     */
+    private fun getMealName(model: ChosenMeal): String? {
+        // If a meal name was provided, use that
+        model.mealName?.let { return it }
+
+        // Otherwise, use the actual data (once it's available)
+        return model.mealDetails.get()
+                ?.strMeal
+    }
+
+    /**
+     *  The meal image could come from either (or neither) of two places:
+     *  1. The ChosenMeal, in the case where a previous screen provided it for optimization
+     *  2. The actual data call ([MealDetails].strMealThumb) in the case of state restoration or
+     *     (in future) deeplinking
+     */
+    private fun getMealImage(model: ChosenMeal): String? {
+        // If a meal name was provided, use that
+        model.imageUrl?.let { return it }
+
+        // Otherwise, use the actual data (once it's available)
+        return model.mealDetails.get()
+                ?.strMealThumb
     }
 }

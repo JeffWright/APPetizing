@@ -6,6 +6,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.jtw.appetizing.core.*
+import com.jtw.appetizing.domain.MealCategory
+import com.jtw.appetizing.domain.MealId
 import com.jtw.appetizing.feature.categories.CategoriesListFragment
 import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
 import com.jtw.appetizing.network.Uninitialized
@@ -14,11 +16,10 @@ import kotlinx.android.synthetic.main.fragment_container.container_primary
 import kotlinx.android.synthetic.main.fragment_container_two_pane.*
 import javax.inject.Inject
 
+
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val BUNDLE_KEY_TWO_PANE = "two_pane"
-
         /** If the screen is wider than this, we will show the list and details side-by-side */
         const val TWO_PANE_WIDTH = 480
     }
@@ -54,15 +55,18 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.modelStore = modelStore
 
-        if (savedInstanceState == null) {
+        if (modelStore.currentState.categories is Uninitialized) {
+            modelStore.onEvent(RequestLoadCategoriesEvent)
+        }
+
+        val savedState = SavedInstanceState.from(savedInstanceState)
+        if (savedState == null) {
             // Brand new activity, so show the initial fragment
             supportFragmentManager.transaction(false) {
                 replace(R.id.container_primary, CategoriesListFragment())
             }
-
-            modelStore.onEvent(RequestLoadCategoriesEvent)
         } else {
-            if (savedInstanceState.getBoolean(BUNDLE_KEY_TWO_PANE) != isTwoPane) {
+            if (savedState.isTwoPane != isTwoPane) {
                 // There are two possible locations where the MealDetailsFragment could be
                 // (primary pane, if it's the only one, or secondary pane if that exists)
                 //
@@ -76,7 +80,22 @@ class MainActivity : AppCompatActivity() {
                         }
             }
 
+            val chosenCategory = savedState.category
+            val mealId = savedState.mealId
+            modelStore.onEvent(RestoreAppEvent(
+                    chosenCategory,
+                    mealId
+            ))
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val chosenCategory = modelStore.currentState.chosenCategory as? ChosenCategory.Actual
+        val chosenMeal = modelStore.currentState.chosenMeal
+
+        SavedInstanceState(isTwoPane, chosenCategory?.category, chosenMeal?.mealId)
+                .writeTo(outState)
     }
 
     private fun putDetailFragmentInCorrectLocation(detailFragment: Fragment) {
@@ -112,11 +131,6 @@ class MainActivity : AppCompatActivity() {
                     R.anim.slide_out_right
             )
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(BUNDLE_KEY_TWO_PANE, isTwoPane)
     }
 
     override fun onStart() {
@@ -163,6 +177,44 @@ class MainActivity : AppCompatActivity() {
     fun showToolbarBackButton(shown: Boolean) {
         supportActionBar?.setDisplayShowHomeEnabled(shown)
         supportActionBar?.setDisplayHomeAsUpEnabled(shown)
+    }
+
+    private class SavedInstanceState(
+            val isTwoPane: Boolean,
+            val category: MealCategory?,
+            val mealId: MealId?
+    ) {
+        companion object {
+            const val BUNDLE_KEY_TWO_PANE = "two_pane"
+            const val BUNDLE_KEY_CATEGORY = "category"
+            const val BUNDLE_KEY_MEAL_ID = "meal_id"
+
+
+            fun from(savedInstanceState: Bundle?): SavedInstanceState? {
+                savedInstanceState ?: return null
+
+                val category = savedInstanceState.getString(BUNDLE_KEY_CATEGORY)?.let {
+                    MealCategory(it)
+                }
+                val mealId = savedInstanceState.getString(BUNDLE_KEY_MEAL_ID)?.let {
+                    MealId(it)
+                }
+
+                return SavedInstanceState(
+                        savedInstanceState.getBoolean(BUNDLE_KEY_TWO_PANE),
+                        category,
+                        mealId
+                )
+            }
+        }
+
+
+        fun writeTo(outState: Bundle) {
+            outState.putBoolean(BUNDLE_KEY_TWO_PANE, isTwoPane)
+
+            category?.strCategory?.let { outState.putString(BUNDLE_KEY_CATEGORY, it) }
+            mealId?.id?.let { outState.putString(BUNDLE_KEY_MEAL_ID, it) }
+        }
     }
 }
 
