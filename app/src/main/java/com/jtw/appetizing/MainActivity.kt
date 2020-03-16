@@ -6,8 +6,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.jtw.appetizing.core.*
-import com.jtw.appetizing.dagger.DaggerMainActivityComponent
-import com.jtw.appetizing.dagger.InjectionFragmentLifecycleCallbacks
 import com.jtw.appetizing.feature.categories.CategoriesListFragment
 import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
 import com.jtw.appetizing.network.Uninitialized
@@ -38,19 +36,15 @@ class MainActivity : AppCompatActivity() {
         get() = if (isTwoPane) R.id.container_secondary else R.id.container_primary
     private val isTwoPane by lazy { shouldBeTwoPane() }
 
-    private val daggerComponent = DaggerMainActivityComponent
-            .builder()
-            .activity(this)
-            .build()
-
-    private val fragmentLifecycleCallbacks = InjectionFragmentLifecycleCallbacks(daggerComponent)
+    val daggerComponent by lazy {
+        (application as AppetizingApplication)
+                .daggerComponent
+                .newMainActivityComponentBuilder()
+                .activity(this)
+                .build()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        supportFragmentManager.registerFragmentLifecycleCallbacks(
-                fragmentLifecycleCallbacks,
-                true
-        )
-
         super.onCreate(savedInstanceState)
 
         daggerComponent.inject(this)

@@ -3,7 +3,7 @@ package com.jtw.appetizing.core
 import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentManager
 import com.jtw.appetizing.R
-import com.jtw.appetizing.dagger.ApplicationScoped
+import com.jtw.appetizing.dagger.ActivityScoped
 import com.jtw.appetizing.feature.mealdetails.MealDetailsFragment
 import com.jtw.appetizing.feature.singlecategory.MealsListFragment
 import com.jtw.appetizing.util.filterIsInstance
@@ -15,7 +15,7 @@ import javax.inject.Inject
 /**
  * Handles navigation transitions between screens
  */
-@ApplicationScoped
+@ActivityScoped
 class Navigator @Inject constructor(
         private val fragmentManager: FragmentManager
 ) {

@@ -1,6 +1,6 @@
 package com.jtw.appetizing.core
 
-import com.jtw.appetizing.dagger.ApplicationScoped
+import com.jtw.appetizing.dagger.ActivityScoped
 import com.jtw.appetizing.network.MealDbService
 import com.jtw.appetizing.util.plusAssign
 import javax.inject.Inject
@@ -10,7 +10,7 @@ import javax.inject.Inject
  *
  * Handles all [Event]s And [Effect]s (except [NavigationEffect]s, which are handled by [Navigator])
  */
-@ApplicationScoped
+@ActivityScoped
 class AppetizingModelStore(
         initialState: AppState,
         private val mealDbService: MealDbService
