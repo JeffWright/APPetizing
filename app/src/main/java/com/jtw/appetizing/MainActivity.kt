@@ -48,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        supportFragmentManager.addOnBackStackChangedListener { updateActionBar() }
+
         daggerComponent.inject(this)
 
         val contentLayoutId = if (isTwoPane) R.layout.fragment_container_two_pane else R.layout.fragment_container
@@ -87,6 +89,8 @@ class MainActivity : AppCompatActivity() {
                     mealId
             ))
         }
+
+        updateActionBar()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -174,9 +178,16 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun showToolbarBackButton(shown: Boolean) {
-        supportActionBar?.setDisplayShowHomeEnabled(shown)
-        supportActionBar?.setDisplayHomeAsUpEnabled(shown)
+    private fun updateActionBar() {
+        val fragmentManager = supportFragmentManager
+
+        val showUp = fragmentManager.backStackEntryCount > 0
+        supportActionBar?.setDisplayShowHomeEnabled(showUp)
+        supportActionBar?.setDisplayHomeAsUpEnabled(showUp)
+
+        val topmostFragment = fragmentManager.fragments.lastOrNull()
+        title = (topmostFragment as? TitleProvider)?.title
+                ?: getString(R.string.app_name)
     }
 
     private class SavedInstanceState(
@@ -217,4 +228,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-

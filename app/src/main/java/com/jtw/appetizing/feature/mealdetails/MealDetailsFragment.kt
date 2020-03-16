@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jtw.appetizing.R
+import com.jtw.appetizing.TitleProvider
 import com.jtw.appetizing.core.DisposableFragment
 import com.jtw.appetizing.dagger.MainActivityComponent
 import com.jtw.appetizing.util.hide
@@ -13,7 +14,7 @@ import javax.inject.Inject
 
 
 /** This fragment shows a detail view for a particular meal */
-class MealDetailsFragment : DisposableFragment() {
+class MealDetailsFragment : DisposableFragment(), TitleProvider {
 
     companion object {
         const val TAG = "MealDetailsFragment"
@@ -40,6 +41,8 @@ class MealDetailsFragment : DisposableFragment() {
 
         return view
     }
+
+    override val title: CharSequence? = ""
 }
 
 class DetailsTransition : TransitionSet() {

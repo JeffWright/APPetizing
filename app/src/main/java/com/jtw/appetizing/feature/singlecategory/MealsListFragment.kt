@@ -4,15 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.jtw.appetizing.MainActivity
 import com.jtw.appetizing.R
+import com.jtw.appetizing.TitleProvider
 import com.jtw.appetizing.core.ChosenCategory
 import com.jtw.appetizing.core.DisposableFragment
 import com.jtw.appetizing.dagger.MainActivityComponent
 import javax.inject.Inject
 
 
-class MealsListFragment : DisposableFragment() {
+class MealsListFragment : DisposableFragment(), TitleProvider {
 
     @Inject lateinit var mealsPresenter: MealsListPresenter
 
@@ -22,20 +22,18 @@ class MealsListFragment : DisposableFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.list, container, false)
-        view.tag = "MealsListFragment"
         addToDisposable(
                 mealsPresenter.bind(view, modelStore)
         )
 
-        setActivityTitle(modelStore.currentState?.chosenCategory)
         return view
     }
 
-    private fun setActivityTitle(chosenCategory: ChosenCategory?) {
-        val actualCategory = chosenCategory as? ChosenCategory.Actual ?: return
-        activity?.title = actualCategory.category.strCategory
-        (activity as? MainActivity)?.showToolbarBackButton(true)
-    }
+    override val title: CharSequence?
+        get() {
+            val chosenCategory = modelStore.currentState?.chosenCategory as? ChosenCategory.Actual
+            return chosenCategory?.category?.strCategory
+        }
 
 }
 
